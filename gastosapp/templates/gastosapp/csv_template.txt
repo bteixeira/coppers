@@ -1,0 +1,2 @@
+{% for row in data %}{% for field in row %}{% if forloop.first %}"{{ field|addslashes }}"{% else %};"{{ field|addslashes }}"{% endif %}{% endfor %}
+{% endfor %}
