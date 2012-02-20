@@ -1,0 +1,18 @@
+<html>
+<head>
+	<title>Stats</title>
+	<script type="text/javascript" src="media/jquery-1.5.2.js"></script>
+	<script type="text/javascript" src="media/datejs-all/date-pt-PT.js"></script>
+	<script type="text/javascript" src="media/datejs-all/date-en-US.js"></script>
+</head>
+<body>
+	<h1>Import Batch</h1>
+	<!--<div><a href="logout">Logout</a></div>-->
+	<div><a href="month_view">::&nbsp;Month View</a>&nbsp;::&nbsp;<a href="stats">All-time Stats</a>&nbsp;::&nbsp;<a href="import_form">Import Batch</a>&nbsp;::&nbsp;<a href="export">Export Batch</a>&nbsp;::&nbsp;<a href="exportCSV">Export CSV</a>&nbsp;::&nbsp;<a href="report_cash">Cash Report</a></div><p/>
+	<form id="form1" action="import" method="post">
+		{% csrf_token %}
+		<div><textarea rows="10" cols="80" name="spendings"></textarea></div>
+		<div><input type="submit" value="Go" /></div>
+	</form>
+</body>
+</html>

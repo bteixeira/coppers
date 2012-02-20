@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<h1>Report: Cash Usage</h1>
+	<div><a href="month_view">::&nbsp;Month View</a>&nbsp;::&nbsp;<a href="stats">All-time Stats</a>&nbsp;::&nbsp;<a href="import_form">Import Batch</a>&nbsp;::&nbsp;<a href="export">Export Batch</a>&nbsp;::&nbsp;<a href="exportCSV">Export CSV</a>&nbsp;::&nbsp;<a href="report_cash">Cash Report</a></div><p/>
+	<h3>{{ year }}/{{ month }}, todos os pagamentos com ({{ payments }})</h3>
+	<table style="border: solid 1px;">
+		<tr>
+			<td style="border: solid 1px;">Acumulado</td>
+			<td style="border: solid 1px;">Quando</td>
+			<td style="border: solid 1px;">Quanto</td>
+			<td style="border: solid 1px;">O Qu&ecirc;</td>
+			<td style="border: solid 1px;">Tipo</td>
+		</tr>
+		{% for spending in spendings %}
+			<tr>
+				<td style="border: solid 1px;">{{ spending.total }}</td>
+				<td style="border: solid 1px;">{{ spending.date }}</td>
+				<td style="border: solid 1px;">{{ spending.value }}</td>
+				<td style="border: solid 1px;">{{ spending.descr }}</td>
+				<td style="border: solid 1px;">{{ spending.type }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+</body>
+</html>

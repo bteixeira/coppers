@@ -1,0 +1,10 @@
+*.pyc
+gastosapp/data
+.hg/
+.project
+.pydevproject
+.settings/
+gastos.db
+gastosapp/testing/
+.git_hub/
+.idea/

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>{% block title %}Coppers | Budget Control Web Application{% endblock %}</title>
+	<link rel="stylesheet" href="media/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" href="media/bootstrap/css/bootstrap-responsive.css">
+	<style type="text/css">
+		body {
+			/* DARK */
+			/* background-image: url("media/img/bg/black_denim.png"); */
+			/* background-image: url("media/img/bg/black_linen_v2.png"); */
+			/* background-image: url("media/img/bg/black_paper.png"); */
+			/* background-image: url("media/img/bg/black_scales.png"); */
+			/* background-image: url("media/img/bg/black_thread.png"); */
+			/* background-image: url("media/img/bg/broken_noise.png"); */
+			/* background-image: url("media/img/bg/dark_wood.png"); */
+			/* background-image: url("media/img/bg/fake_brick.png"); */
+
+			/* LIGHT */
+			background-image: url("media/img/bg/white_leather.png");
+			/*background-image: url("media/img/bg/noise_pattern_with_crosslines.png");*/
+			/*background-image: url("media/img/bg/white_carbon.png");*/
+			/*background-image: url("media/img/bg/whitediamond.png");*/
+			/*background-image: url("media/img/bg/large_leather.png");*/
+			/*background-image: url("media/img/bg/lined_paper.png");*/
+			/*background-image: url("media/img/bg/cutcube.png");*/
+			/*background-image: url("media/img/bg/snow.png");*/
+			/*background-image: url("media/img/bg/cross_scratches.png");*/
+
+			/*background-image: url("media/img/bg/tileable_wood_texture.png");*/
+
+			padding-top: 40px;
+		}
+	</style>
+	<script type="text/javascript" src="media/jquery-1.5.2.js"></script>
+	<script type="text/javascript" src="media/date.js"></script>
+	<script type="text/javascript" src="media/datejs-all/date-pt-PT.js"></script>
+	<script type="text/javascript" src="media/datejs-all/date-en-US.js"></script>
+</head>
+<body>
+	<div class="container">
+		<div class="content">
+{% block content %}{% endblock %}
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{% extends 'gastosapp/base.htm' %}
+{% block content %}
+	<div class="row">
+		<h1>{% block main_title %}Welcome{% endblock %}</h1>
+	</div>
+	<div>
+		<a href="month_view">::&nbsp;Month View</a>
+		&nbsp;::&nbsp;
+		<a href="stats">All-time Stats</a>
+		&nbsp;::&nbsp;
+		<a href="import_form">Import Batch</a>
+		&nbsp;::&nbsp;
+		<a href="export">Export Batch</a>
+		&nbsp;::&nbsp;
+		<a href="exportCSV">Export CSV</a>
+		&nbsp;::&nbsp;
+		<a href="report_cash">Cash Report</a>
+	</div>
+	<p></p>
+	{% block main_content %}{% endblock %}
+{% endblock %}
