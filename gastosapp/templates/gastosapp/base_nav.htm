@@ -1,20 +1,28 @@
 {% extends 'gastosapp/base.htm' %}
 {% block content %}
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container" style="width: auto;">
+				<a class="brand" href="#">Coppers</a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						<li><a href="month_view">Month View</a></li>
+						<li><a href="stats">All-time Stats</a></li>
+						<li><a href="report_cash">Cash Report</a></li>
+					</ul>
+					<ul class="nav pull-right">
+						<li><a href="exportCSV">Export CSV</a></li>
+						<li><a href="export">Export Batch</a></li>
+						<li><a href="import_form">Import Batch</a></li>
+						<li class="divider-vertical"></li>
+						<li><a href="#">Logout</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div class="row">
 		<h1>{% block main_title %}Welcome{% endblock %}</h1>
-	</div>
-	<div>
-		<a href="month_view">::&nbsp;Month View</a>
-		&nbsp;::&nbsp;
-		<a href="stats">All-time Stats</a>
-		&nbsp;::&nbsp;
-		<a href="import_form">Import Batch</a>
-		&nbsp;::&nbsp;
-		<a href="export">Export Batch</a>
-		&nbsp;::&nbsp;
-		<a href="exportCSV">Export CSV</a>
-		&nbsp;::&nbsp;
-		<a href="report_cash">Cash Report</a>
 	</div>
 	<p></p>
 	{% block main_content %}{% endblock %}
