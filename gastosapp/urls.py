@@ -15,4 +15,5 @@ urlpatterns = patterns('',
 	(r'^month_graph$', 'gastosapp.views.exportCSV'),
 	(r'^report_cash$', 'gastosapp.views.report_cash'),
 	(r'^media/(?P<path>.*\.js)$', 'django.views.static.serve', {'document_root': 'gastosapp/media/js'}),
+	(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'gastosapp/media'}),
 )

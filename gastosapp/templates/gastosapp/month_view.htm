@@ -1,3 +1,5 @@
+{% extends "gastosapp/base_nav.htm" %}
+{% comment %}
 <html>
 <head>
 	<title>Gastos</title>
@@ -5,6 +7,8 @@
     <script type="text/javascript" src="media/date.js"></script>
 {#    <script type="text/javascript" src="media/datejs-all/date-pt-PT.js"></script>#}
 {#    <script type="text/javascript" src="media/datejs-all/date-en-US.js"></script>#}
+{% endcomment %}
+{% block main_content %}
 	<script type="text/javascript">
 		
 		var spendings = 0;
@@ -12,7 +16,7 @@
 			{% for day, color in day_colors.items %}
 				'{{ day }}': '{{ color }}'{% if not forloop.last %},{% endif %}
 			{% endfor %}
-		}
+		};
 
 		function getDayStyle(day) {
 			var style;
@@ -40,7 +44,7 @@
 		        style = ''
 	        }
 			return style;
-		}
+		};
 		
 		function getCellSpending (day) {
 			if (day !== 0 && !day) {
@@ -330,23 +334,52 @@
 		}
 		$(document).ready(fillTable);
 	</script>
-</head>
-<body>
-	<h1>Welcome</h1>
-	<!--<div><a href="logout">Logout</a></div>-->
-	<div><a href="month_view">::&nbsp;Month View</a>&nbsp;::&nbsp;<a href="stats">All-time Stats</a>&nbsp;::&nbsp;<a href="import_form">Import Batch</a>&nbsp;::&nbsp;<a href="export">Export Batch</a>&nbsp;::&nbsp;<a href="exportCSV">Export CSV</a>&nbsp;::&nbsp;<a href="report_cash">Cash Report</a></div><p/>
-	<div><strong>Month:</strong>&nbsp;<a href="month_view?month={{ month_prev }}&year={{ month_prev_year }}">&laquo;</a>&nbsp;{{ month }}&nbsp;/&nbsp;{{ year }}&nbsp;<a href="month_view?month={{ month_next }}&year={{ month_next_year }}">&raquo;</a></div>
-	<select name="date" id="select_date">
-		{% for date in dates %}
-		<option value="{{ date.month }}/{{ date.year }}" {% if date.month == month and date.year == year %} selected="selected"{% endif %}>{{ date.month }} / {{ date.year }}</option>
-		{% endfor %}
-	</select>
+	<div>
+		<strong>Month:</strong>
+		<a href="month_view?month={{ month_prev }}&year={{ month_prev_year }}">&laquo;</a>
+		{{ month }}&nbsp;/&nbsp;{{ year }}
+		<a href="month_view?month={{ month_next }}&year={{ month_next_year }}">&raquo;</a>
+	</div>
 	<form method="GET" action="month_view" id="form_date">
+		<select name="date" id="select_date">
+			{% for date in dates %}
+				<option value="{{ date.month }}/{{ date.year }}" {% if date.month == month and date.year == year %} selected="selected"{% endif %}>{{ date.month }} / {{ date.year }}</option>
+			{% endfor %}
+		</select>
 		<input type="hidden" name="month" id="input_month"/>
 		<input type="hidden" name="year" id="input_year"/>
 		<input type="submit" value="Go" onclick="javascript:setFormDate()"/>
 	</form>
-	<div><strong>Code:</strong>&nbsp;{{ code }}</div>
+	<div>
+		<strong>Code:</strong>&nbsp;{{ code }}
+	</div>
+	<form id="form_test" action="save" method="post">
+		<table>
+			<tr id="row_day_1">
+				<td style="border: solid 1px;" class="total">186.4</td>
+				<td class="day">1</td>
+				<td>
+					<div>Descr</div>
+					<div>Amount</div>
+					<div>Type</div>
+				</td>
+				<td id="0" class="spending" style="border: 1px solid black;">
+					<div><input type="text" id="descr_0" name="descr_0" class="descr"></div>
+					<div><input type="text" class="amount" id="amount_0" name="amount_0"></div>
+					<div><input type="text" class="type" id="type_0" name="type_0"></div>
+					<div><select class="payment" id="payment_0" name="payment_0">
+						<option value=""></option>
+						<option value="1">Cartão</option>
+						<option value="2">Dinheiro</option>
+						<option value="3">Transferência</option>
+					</select>
+						<input type="hidden" class="spid" id="spid_0" name="spid_0" value="1393">
+						<input type="hidden" value="1" class="day" id="day_0" name="day_0">
+					</div>
+				</td>
+			</tr>
+		</table>
+	</form>
 	<form id="form1" action="save" method="post">
 		{% csrf_token %}
 		<input type="hidden" name="code" value="{{ code.code }}">
@@ -357,5 +390,4 @@
 		</table>
 		<input type="submit" value="Save" />
 	</form>
-</body>
-</html>
+{% endblock %}
