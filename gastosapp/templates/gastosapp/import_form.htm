@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <html>
 <head>
 	<title>Stats</title>
@@ -16,3 +17,14 @@
 	</form>
 </body>
 </html>
+=======
+{% extends "gastosapp/base_nav.htm" %}
+{% block main_title %}Import Batch{% endblock %}
+{%  block main_content %}
+<form id="form1" action="import" method="post">
+	{% csrf_token %}
+	<div><textarea rows="10" cols="80" name="spendings"></textarea></div>
+	<div><input type="submit" value="Go" /></div>
+</form>
+{% endblock %}
+>>>>>>> 3de71b2bdaa31bc3db1a3696f1537fa5662b2445
