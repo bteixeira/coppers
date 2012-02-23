@@ -43,6 +43,7 @@ class Spending(models.Model):
 	type = models.ForeignKey(SpendingType, null=True, blank=True)
 	code = models.ForeignKey(Code, null=True)
 	payment = models.ForeignKey(PaymentType, null=True, blank=True)
+	#nothing to see here
 
 	def __unicode__(self):
 		result = '{SPENT ' + str(self.value) + ' @ ' + str(self.date)
