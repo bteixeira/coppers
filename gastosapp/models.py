@@ -36,11 +36,19 @@ class PaymentType(models.Model):
 class Spending(models.Model):
 	value = models.DecimalField(max_digits=10, decimal_places=2, null=True)
 	description = models.ForeignKey(SpendingDescription, null=True)
+<<<<<<< HEAD
 	location = models.ForeignKey(SpendingLocation, null=True)
 	details = models.CharField(max_length=200, null=True)
 	amount = models.CharField(max_length=200, null=True)
 	date = models.DateTimeField(null=True)
 	type = models.ForeignKey(SpendingType, null=True)
+=======
+	location = models.ForeignKey(SpendingLocation, null=True, blank=True)
+	details = models.CharField(max_length=200, null=True, blank=True)
+	amount = models.CharField(max_length=200, null=True, blank=True)
+	date = models.DateTimeField(null=True)
+	type = models.ForeignKey(SpendingType, null=True, blank=True)
+>>>>>>> 3de71b2bdaa31bc3db1a3696f1537fa5662b2445
 	code = models.ForeignKey(Code, null=True)
 	payment = models.ForeignKey(PaymentType, null=True, blank=True)
 
