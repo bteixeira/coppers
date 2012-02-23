@@ -1,5 +1,6 @@
 {% extends 'gastosapp/base.htm' %}
 {% block content %}
+<<<<<<< HEAD
 	<div class="row">
 		<h1>{% block main_title %}Welcome{% endblock %}</h1>
 	</div>
@@ -16,6 +17,32 @@
 		&nbsp;::&nbsp;
 		<a href="report_cash">Cash Report</a>
 	</div>
+=======
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container" style="width: auto;">
+				<a class="brand" href="#">Coppers</a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						<li><a href="month_view">Month View</a></li>
+						<li><a href="stats">All-time Stats</a></li>
+						<li><a href="report_cash">Cash Report</a></li>
+					</ul>
+					<ul class="nav pull-right">
+						<li><a href="exportCSV">Export CSV</a></li>
+						<li><a href="export">Export Batch</a></li>
+						<li><a href="import_form">Import Batch</a></li>
+						<li class="divider-vertical"></li>
+						<li><a href="#">Logout</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<h1>{% block main_title %}Welcome{% endblock %}</h1>
+	</div>
+>>>>>>> 3de71b2bdaa31bc3db1a3696f1537fa5662b2445
 	<p></p>
 	{% block main_content %}{% endblock %}
 {% endblock %}
