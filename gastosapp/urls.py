@@ -14,16 +14,7 @@ urlpatterns = patterns('',
 	(r'^exportCSV$', 'gastosapp.views.exportCSV'),
 	(r'^month_graph$', 'gastosapp.views.exportCSV'),
 	(r'^report_cash$', 'gastosapp.views.report_cash'),
-<<<<<<< HEAD
-<<<<<<< HEAD
-	(r'^media/(?P<path>.*\.js)$', 'django.views.static.serve', {'document_root': 'gastosapp/media/js'}),
-	(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'gastosapp/media'}),
-=======
 	(r'^media/(?P<path>.*\.js)$', 'django.views.static.serve', {'document_root': '/home/acat/projects/gastos/gastosapp/media/js'}),
 	(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': '/home/acat/projects/gastos/gastosapp/media'}),
->>>>>>> 3de71b2bdaa31bc3db1a3696f1537fa5662b2445
-=======
-	(r'^media/(?P<path>.*\.js)$', 'django.views.static.serve', {'document_root': '/home/acat/projects/gastos/gastosapp/media/js'}),
-	(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': '/home/acat/projects/gastos/gastosapp/media'}),
->>>>>>> 3de71b2bdaa31bc3db1a3696f1537fa5662b2445
 )
+
