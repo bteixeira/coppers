@@ -8,3 +8,5 @@ gastos.db
 gastosapp/testing/
 .git_hub/
 .idea/
+server.log
+

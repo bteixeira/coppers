@@ -363,64 +363,42 @@
 		<table class="table table-condensed table-bordered table-striped">
 		<tbody>
 			<tr>
-				<td style="text-align: center;">
+				<td style="text-align: center; vertical-align: middle;">
 					<strong>Wed 01</strong>
 					<br>
 					Total &euro; 4,47
 				</td>
-				<td>
+				<td style="text-align: center; vertical-align: bottom;">
 					<button class="btn btn-small" type="button" onclick="test_addRow()"><i class="icon-plus"></i></button>
 				</td>
 				<td>
-					<div class="row">
-						<input type="text" placeholder="Description..." style="width: 500px;">
-						<input type="text" placeholder="&euro; 0,00" style="text-align: right; width: 50px;">
-						<input type="text" placeholder="Category:Subcategory:Subsub..." style="width: 200px">
-						<select style="width: 100px;">
+					<div class="row span12">
+						<input type="text" placeholder="Description..." class="span5">
+						<input type="text" placeholder="&euro; 0,00" style="text-align: right;" class="span1">
+						<input type="text" placeholder="Category:Subcategory:Subsub..." class="span2">
+						<select class="span2">
 							<option value="" selected="selected">Payment...</option>
 							<option>Card</option>
 							<option>Cash</option>
 							<option>Transfer</option>
 						</select>
 					</div>
-					<div class="row">
-						<input type="text" placeholder="Description..." style="width: 500px;">
-						<input type="text" placeholder="&euro; 0,00" style="text-align: right; width: 50px;">
-						<input type="text" placeholder="Category:Subcategory:Subsub..." style="width: 200px">
-						<select style="width: 100px;">
+					<div class="row span12">
+						<input type="text" placeholder="Description..." class="span5">
+						<input type="text" placeholder="&euro; 0,00" style="text-align: right;" class="span1">
+						<input type="text" placeholder="Category:Subcategory:Subsub..." class="span2">
+						<select class="span2">
 							<option value="" selected="selected">Payment...</option>
 							<option>Card</option>
 							<option>Cash</option>
 							<option>Transfer</option>
 						</select>
 					</div>
-					<div class="row">
-						<input type="text" placeholder="Description..." style="width: 500px;">
-						<input type="text" placeholder="&euro; 0,00" style="text-align: right; width: 50px;">
-						<input type="text" placeholder="Category:Subcategory:Subsub..." style="width: 200px">
-						<select style="width: 100px;">
-							<option value="" selected="selected">Payment...</option>
-							<option>Card</option>
-							<option>Cash</option>
-							<option>Transfer</option>
-						</select>
-					</div>
-					<div class="row">
-						<input type="text" placeholder="Description..." style="width: 500px;">
-						<input type="text" placeholder="&euro; 0,00" style="text-align: right; width: 50px;">
-						<input type="text" placeholder="Category:Subcategory:Subsub..." style="width: 200px">
-						<select style="width: 100px;">
-							<option value="" selected="selected">Payment...</option>
-							<option>Card</option>
-							<option>Cash</option>
-							<option>Transfer</option>
-						</select>
-					</div>
-					<div class="row">
-						<input type="text" placeholder="Description..." style="width: 500px;">
-						<input type="text" placeholder="&euro; 0,00" style="text-align: right; width: 50px;">
-						<input type="text" placeholder="Category:Subcategory:Subsub..." style="width: 200px">
-						<select style="width: 100px;">
+					<div class="row span12">
+						<input type="text" placeholder="Description..." class="span5">
+						<input type="text" placeholder="&euro; 0,00" style="text-align: right;" class="span1">
+						<input type="text" placeholder="Category:Subcategory:Subsub..." class="span2">
+						<select class="span2">
 							<option value="" selected="selected">Payment...</option>
 							<option>Card</option>
 							<option>Cash</option>
@@ -430,20 +408,20 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="text-align: center;">
+				<td style="text-align: center; vertical-align: middle;">
 					<strong>Thu 02</strong>
 					<br>
 					Total &euro; 8,41
 				</td>
-				<td>
+				<td style="text-align: center; vertical-align: bottom;">
 					<button class="btn btn-small" type="button" onclick="test_addRow()"><i class="icon-plus"></i></button>
 				</td>
 				<td>
-					<div class="row">
-						<input type="text" placeholder="Description..." style="width: 500px;">
-						<input type="text" placeholder="&euro; 0,00" style="text-align: right; width: 50px;">
-						<input type="text" placeholder="Category:Subcategory:Subsub..." style="width: 200px">
-						<select style="width: 100px;">
+					<div class="row span12">
+						<input type="text" placeholder="Description..." class="span5">
+						<input type="text" placeholder="&euro; 0,00" style="text-align: right;" class="span1">
+						<input type="text" placeholder="Category:Subcategory:Subsub..." class="span2">
+						<select class="span2">
 							<option value="" selected="selected">Payment...</option>
 							<option>Card</option>
 							<option>Cash</option>
@@ -455,31 +433,6 @@
 		</tbody>
 		</table>
 
-		<table>
-			<tr id="row_day_1">
-				<td style="border: solid 1px;" class="total">186.4</td>
-				<td class="day">1</td>
-				<td>
-					<div>Descr</div>
-					<div>Amount</div>
-					<div>Type</div>
-				</td>
-				<td id="0" class="spending" style="border: 1px solid black;">
-					<div><input type="text" id="descr_0" name="descr_0" class="descr"></div>
-					<div><input type="text" class="amount" id="amount_0" name="amount_0"></div>
-					<div><input type="text" class="type" id="type_0" name="type_0"></div>
-					<div><select class="payment" id="payment_0" name="payment_0">
-						<option value=""></option>
-						<option value="1">Cartão</option>
-						<option value="2">Dinheiro</option>
-						<option value="3">Transferência</option>
-					</select>
-						<input type="hidden" class="spid" id="spid_0" name="spid_0" value="1393">
-						<input type="hidden" value="1" class="day" id="day_0" name="day_0">
-					</div>
-				</td>
-			</tr>
-		</table>
 	</form>
 	<form id="form1" action="save" method="post">
 		{% csrf_token %}
