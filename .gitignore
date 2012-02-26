@@ -9,4 +9,5 @@ gastosapp/testing/
 .git_hub/
 .idea/
 server.log
+settings.py
 
