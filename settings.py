@@ -19,9 +19,9 @@ DATABASES = {
         #'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
         
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'gastos',   # Or path to database file if using sqlite3.
-        'USER': 'gastos_app',                      # Not used with sqlite3.
-        'PASSWORD': 'gastos_app',                  # Not used with sqlite3.
+        'NAME': 'coppers_tst',   # Or path to database file if using sqlite3.
+        'USER': 'coppers_tst',                      # Not used with sqlite3.
+        'PASSWORD': 'coppers_tst',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
@@ -53,8 +53,8 @@ USE_L10N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-#MEDIA_ROOT = '/home/bruno/Projects/gastos/static'
-MEDIA_ROOT = ''
+MEDIA_ROOT = '/home/acat/projects/gastos/gastosapp/media/'
+#MEDIA_ROOT = ''
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
