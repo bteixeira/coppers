@@ -70,8 +70,8 @@
 					'<div class="row span12 spending" id="' + spendings + '">\
 						<input type="text" placeholder="Description..." class="span5 input_descr" name="descr_' + spendings + '" id="descr_' + spendings + '">\
 						<input type="text" placeholder="&euro; 0,00" style="text-align: right;" class="span1 input_amount" name="amount_' + spendings + '" id="amount_' + spendings + '">\
-						<input type="text" placeholder="Category:Subcategory:Subsub..." class="span2 input_category">\
-						<select class="span2 input_payment">\
+						<input type="text" placeholder="Category:Subcategory:Subsub..." class="span2 input_category" name="type_' + spendings + '">\
+						<select class="span2 input_payment" name="payment_' + spendings + '">\
 							<option value="">Payment...</option>\{% for p in payment_types %}
 							<option value="{{ p.id }}">{{ p.name }}</option>\{% endfor %}
 						</select>\
@@ -492,19 +492,23 @@
 		</table>
 	</form>
 	{% endcomment %}
-	
+
 	<form id="form1" action="save" method="post">
 		{% csrf_token %}
 		<input type="hidden" name="code" value="{{ code.code }}">
 		<input type="hidden" name="year" value="{{ year }}">
 		<input type="hidden" name="month" value="{{ month }}">
-		<input type="submit" value="Save" />
+		<div class="control-group">
+			<button type="submit" class="btn btn-primary">Save</button>
+		</div>
 		<table id="table1" class="table table-condensed table-bordered table-striped">
 			<tbody>
 
 			</tbody>
 		</table>
-		<input type="submit" value="Save" />
+		<div class="control-group">
+			<button type="submit" class="btn btn-primary">Save</button>
+		</div>
 	</form>
 {% endblock %}
 
