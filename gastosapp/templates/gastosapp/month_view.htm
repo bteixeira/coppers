@@ -50,6 +50,7 @@
 			if (day !== 0 && !day) {
 				throw "No day passed";
 			}
+			{% comment %}
 			var text = '\
 				<td style="border: 1px solid black;" class="spending" id="' + spendings + '">\
 					<div' + getDayStyle(day) + '><input class="descr" type="text" name="descr_' + spendings + '" id="descr_' + spendings + '"/></div>\
@@ -62,16 +63,62 @@
 					<input type="hidden" name="spid_' + spendings + '" id="spid_' + spendings + '" class="spid"/>\
 					<input type="hidden" name="day_' + spendings + '" id="day_' + spendings + '" class="day" value="' + day + '"/>\
 				</td>';
+			{% endcomment %}
+			var text =
+				//'\
+				//<td id="spendings_day_' + day + '" class="spendings_cell">\
+					'<div class="row span12 spending" id="' + spendings + '">\
+						<input type="text" placeholder="Description..." class="span5 input_descr" name="descr_' + spendings + '" id="descr_' + spendings + '">\
+						<input type="text" placeholder="&euro; 0,00" style="text-align: right;" class="span1 input_amount" name="amount_' + spendings + '" id="amount_' + spendings + '">\
+						<input type="text" placeholder="Category:Subcategory:Subsub..." class="span2 input_category">\
+						<select class="span2 input_payment">\
+							<option value="">Payment...</option>\{% for p in payment_types %}
+							<option value="{{ p.id }}">{{ p.name }}</option>\{% endfor %}
+						</select>\
+						<input type="hidden" name="spid_' + spendings + '" id="spid_' + spendings + '" class="spid"/>\
+						<input type="hidden" name="day_' + spendings + '" id="day_' + spendings + '" class="day" value="' + day + '"/>\
+					</div>'
+				//</td>'
+				;
+
             spendings ++;
             return text;
         }
-        function getRowDay(day) {
+
+        function getRowDay_old(day) {
 			var text = '\
 				<tr id="row_day_' + day + '"' + getDayStyle(day) + '>\
 					<td class="total" style="border: solid 1px;"></td>\
 					<td class="day">' + day + '</td class="day"><td><div>Descr</div><div>Amount</div><div>Type</div></td>\
 					' + getCellSpending(day) + '\
 				</tr>';
+			return text;
+		}
+		function getRowDay(day) {
+//			var text = '\
+//				<tr id="row_day_' + day + '"' + getDayStyle(day) + '>\
+//					<td class="total" style="border: solid 1px;"></td>\
+//					<td class="day">' + day + '</td class="day">\
+//					<td><div>Descr</div><div>Amount</div><div>Type</div></td>\
+//					' + getCellSpending(day) + '\
+//				</tr>';
+
+
+			var text = '\
+				<tr id="row_day_' + day + '">\
+					<td id="cell_day_"' + day + '" class="day" style="text-align: center; vertical-align: middle;">\
+						<strong>' + day + '</strong>\
+						<br>\
+						Total &euro; XXX\
+					</td>\
+					<td style="text-align: center; vertical-align: bottom;" class="plus_sign">\
+						<button class="btn btn-small" type="button" onclick="test_addRow()"><i class="icon-plus"></i></button>\
+					</td>\
+					<td id="spendings_day_' + day + '" class="spendings_cell">\
+					' + getCellSpending(day) + '\
+					</td>\
+				</tr>';
+
 			return text;
 		}
 
@@ -223,29 +270,33 @@
 		}
 		
 		function putSpending(day, descr, amount, type, spid, payment) {
-			var tr = $('tr#row_day_' + day);
-			var cells = tr.children('.spending');
-			freeCell = cells.filter(function(index) {
+			//var tr = $('tr#row_day_' + day);
+			var td = $('td#spendings_day_' + day);
+			//var cells = tr.children('.spending');
+			var cells = td.children('.spending');
+			var freeCell = cells.filter(function(index) {
 				var inputs = $(this).find('input');
 				var isEmpty = (
-					inputs.filter('.descr').val() == '' &&
-					inputs.filter('.amount').val() == '' &&
-					inputs.filter('.type').val() == ''
+					inputs.filter('.input_descr').val() === '' &&
+					inputs.filter('.input_amount').val() === '' &&
+					inputs.filter('.input_category').val() === ''
 				) ;
 				return isEmpty;
 			}).first();
 			if (!freeCell.length) {
-				addColumn();
-				freeCell = $('tr#row_day_' + day).children('.spending').last();
+				//addColumn();
+				addCell(day);
+				//freeCell = $('tr#row_day_' + day).children('.spending').last();
+				freeCell = $('td#spendings_day_' + day).children('.spending').last();
 			}
-			freeCell.find('input.descr').val(descr);
-			freeCell.find('input.amount').val(amount);
-			freeCell.find('input.type').val(type);
+			freeCell.find('input.input_descr').val(descr);
+			freeCell.find('input.input_amount').val(amount);
+			freeCell.find('input.input_category').val(type);
 			if (spid === 0 || spid) {
 				freeCell.find('input.spid').val(spid);
 			}
 			freeCell.find('input.day').val(day);
-			freeCell.find('select.payment').val(payment);
+			freeCell.find('select.input_payment').val(payment);
 		}
 		function getId(idString) {
 			var index = idString.lastIndexOf('_');
@@ -296,21 +347,32 @@
 		function addColumn () {
 			//$('#table1').find('tr').append(getCellSpending($(this)));
 			$('#table1').find('tr').each(function(index) {
+			//$('#table1').find('td.spendings_cell').each(function(index) {
 				$(this).append(
 					getCellSpending(
 						parseInt($(this).attr('id').substring(8), 10)
+						//parseInt($(this).attr('id').substring(14), 10)
 					)
 				);
 			});
 			initHandlers();
 		}
+		function addCell (day) {
+			$('#table1').find('#spendings_day_' + day).each(function(index) {
+				$(this).append(
+						getCellSpending(
+//								parseInt($(this).attr('id').substring(14), 10)
+								day
+						)
+				);
+			});
+			initHandlers();
+		}
 		function fillTable() {
-			//var now = Date.today();
-			//var days = now.getDaysInMonth();
 			var days = Date.getDaysInMonth({{ year }}, {{ month }} - 1);
-			var form = $("#table1");
+			var tbody = $("#table1").children('tbody');
 			for (i = 1 ; i <= days ; i++) {
-				form.append(getRowDay(i));
+				tbody.append(getRowDay(i));
 			}
 			initHandlers();
 			
@@ -319,7 +381,6 @@
 			putSpending({{sp.date.day}}, '{{sp.description.description}}', '{{sp.value}}', '{{sp.type.description}}', '{{sp.id}}', '{{ sp.payment.id }}');
 			{% endfor %}
 			{% endif %}
-			{#% endcomment %#}
 			for (i = 1 ; i <= days ; i++) {
 				recalc(i);
 			}
@@ -331,10 +392,6 @@
 			var year = date.substring(date.indexOf('/') + 1);
 			$('#input_month').val(month);
 			$('#input_year').val(year);
-		}
-
-		function test_addRow() {
-			return false;
 		}
 
 		$(document).ready(fillTable);
@@ -358,8 +415,9 @@
 	<div>
 		<strong>Code:</strong>&nbsp;{{ code }}
 	</div>
-	<form id="form_test" action="save" method="post">
 
+	{% comment %}
+	<form id="form_test" action="save" method="post">
 		<table class="table table-condensed table-bordered table-striped">
 		<tbody>
 			<tr>
@@ -432,15 +490,19 @@
 			</tr>
 		</tbody>
 		</table>
-
 	</form>
+	{% endcomment %}
+	
 	<form id="form1" action="save" method="post">
 		{% csrf_token %}
 		<input type="hidden" name="code" value="{{ code.code }}">
 		<input type="hidden" name="year" value="{{ year }}">
 		<input type="hidden" name="month" value="{{ month }}">
 		<input type="submit" value="Save" />
-		<table id="table1">
+		<table id="table1" class="table table-condensed table-bordered table-striped">
+			<tbody>
+
+			</tbody>
 		</table>
 		<input type="submit" value="Save" />
 	</form>
