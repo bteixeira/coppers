@@ -1,23 +1,27 @@
 {% extends "gastosapp/base_nav.htm" %}
 {% block main_title %}Stats{% endblock %}
 {% block main_content %}
-	<table style="border: solid 1px;">
-		<tr>
-			<td style="border: solid 1px;">Ano</td>
-			<td style="border: solid 1px;">M&ecirc;s</td>
-			{% for key in keys %}
-				<td style="border: solid 1px; word-wrap: break-word;">{{ key }}</td>
-			{% endfor %}
-		</tr>
-		{% for line in totals %}
+	<table class="table table-bordered table-striped">
+		<thead>
 			<tr>
-				<td style="border: solid 1px;">{{ line.0 }}</td>
-				<td style="border: solid 1px;">{{ line.1 }}</td>
-				{% for spending in line.2 %}
-				<td style="border: solid 1px;">{{ spending }}</td>
+				<th>Ano</th>
+				<th>M&ecirc;s</th>
+				{% for key in keys %}
+					<th style="word-wrap: break-word;">{{ key }}</th>
 				{% endfor %}
 			</tr>
-		{% endfor %}
+		</thead>
+		<tbody>
+			{% for line in totals %}
+				<tr>
+					<td>{{ line.0 }}</td>
+					<td>{{ line.1 }}</td>
+					{% for spending in line.2 %}
+					<td>{{ spending }}</td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+		</tbody>
 	</table>
 {#</body>#}
 {#</html>#}
