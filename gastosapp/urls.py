@@ -1,10 +1,12 @@
 from django.conf import settings
 from django.conf.urls.defaults import *
+from django.contrib.auth.views import *
 from gastosapp.models import *
 
 urlpatterns = patterns('',
 	(r'^$', 'gastosapp.views.index'),
-	(r'^login$', 'gastosapp.views.login'),
+	#(r'^login$', 'gastosapp.views.login'),
+	(r'^login$', 'django.contrib.auth.views.login', {'template_name': 'gastosapp/login.htm'}),
 	(r'^logout$', 'gastosapp.views.logout'),
 	(r'^month_view$', 'gastosapp.views.month_view'),
 	(r'^save$', 'gastosapp.views.save'),

@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<title>Coppers | Budget Control Web Application</title>
-	<link rel="stylesheet" href="bootstrap/css/bootstrap.css">
-	<link rel="stylesheet" href="bootstrap/css/bootstrap-responsive.css">
+	<link rel="stylesheet" href="media/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" href="media/bootstrap/css/bootstrap-responsive.css">
 	<style type="text/css">
 		body {
 			/* DARK */
@@ -23,12 +23,18 @@
 			/* background-image: url("img/bg/snow.png"); */
 			/* background-image: url("img/bg/cross_scratches.png"); */
 			
-			background-image: url("img/bg/dark_wood.png");
+			background-image: url("media/img/bg/dark_wood.png");
 			padding-top: 40px;
 		}
 	</style>
 </head>
 <body>
+
+{% if form.errors %}
+<p>Errors:{{form.errors}}</p>
+{% else %}
+<p>No errors!</p>
+{% endif %}
 
 <div class="container">
 	<div class="content">
@@ -40,11 +46,13 @@
 	</div>
 	<div class="row">
 		<div class="span3 well">
-			<form>
+			<form method="post" action="{% url django.contrib.auth.views.login %}">
+				{% csrf_token %}
 				<h2>Login</h2>
-				<input id="account" name="account" type="text" placeholder="Account">
-				<input id="account" name="passwd" type="password" placeholder="Password">
+				<input id="username" name="username" type="text" placeholder="Account">
+				<input id="password" name="password" type="password" placeholder="Password">
 				<button class="btn btn-primary" type="submit">Login</button>
+				<input type="hidden" name="next" value="{{ next }}" />
 			</form>
 		</div>
 	</div>

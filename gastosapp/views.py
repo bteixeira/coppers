@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext, loader, Context
 from gastosapp.models import *
+from django.contrib.auth.decorators import login_required
 import datetime
 import string
 import csv
@@ -96,10 +97,11 @@ def month_view(request):
 							'payment_types': payment_types,
 							'dates': dates}, context_instance=RequestContext(request))
 
-def login(request):
-	code = request.POST['code']
-	request.session['code'] = code
-	return HttpResponseRedirect(reverse('gastosapp.views.month_view'))
+#def login(request):
+	#code = request.POST['code']
+	#request.session['code'] = code
+	#return HttpResponseRedirect(reverse('gastosapp.views.month_view'))
+	#return render_to
 
 def logout(request):
 	del request.session['code']
