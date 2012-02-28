@@ -9,6 +9,7 @@ import datetime
 import string
 import csv
 
+@login_required
 def index(request):
 	#if (request.session.get('code', False)):
 	#	return render_to_response('gastosapp/index.htm', context_instance=RequestContext(request))
