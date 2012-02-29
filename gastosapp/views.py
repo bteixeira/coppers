@@ -15,7 +15,7 @@ def index(request):
 	#if (request.session.get('code', False)):
 	#	return render_to_response('gastosapp/index.htm', context_instance=RequestContext(request))
 	#else:
-		return HttpResponseRedirect(reverse('gastosapp.views.month_view'))
+	return HttpResponseRedirect(reverse('gastosapp.views.month_view'))
 
 def get_day_colors(month, year):
 	periods_start = Period.objects.filter(start__year=year,start__month=month)
@@ -31,6 +31,7 @@ def get_day_colors(month, year):
 				colors[i] = period.type.color
 	return colors
 
+@login_required
 def month_view(request):
 	#code = get_code_from_request(request)
 	#code = request.session['code']
@@ -107,6 +108,7 @@ def logout(request):
 	del request.session['code']
 	return HttpResponseRedirect(reverse('gastosapp.views.index'))
 
+@login_required
 def save(request):
 	#code = request.GET['code']
 	code = get_code('bteixeira')
@@ -186,6 +188,7 @@ def get_code_from_request(request):
 	code = request.session['code']
 	return code
 
+@login_required
 def stats_old(request):
 	years = {}
 	totals = {}
@@ -233,6 +236,7 @@ def stats_old(request):
 	print 'totals: ' + str(totals)
 	return render_to_response('gastosapp/stats.htm', {'years': years, 'totals': sorted(totals.items())})
 
+@login_required
 def stats(request):
 	sums = {}
 	totals = {}
@@ -316,6 +320,7 @@ def add_spending(description, type, value, year, month, day, payment):
 	sp.save()
 	#print '  spending saved, id: ' + str(sp.id)
 
+@login_required
 def import_spendings(request):
 	text = request.POST['spendings']
 	lines = text.splitlines()
@@ -339,9 +344,11 @@ def import_spendings(request):
 	print 'ignored: ' + str(ignored) 
 	return render_to_response('gastosapp/import_done.htm', {'added':added, 'ignored':ignored})
 
+@login_required
 def import_form(request):
 	return render_to_response('gastosapp/import_form.htm', context_instance=RequestContext(request))
 
+@login_required
 def export(request):
 	text = ''
 	for spending in Spending.objects.all():
@@ -357,6 +364,7 @@ def export(request):
 		text += str(spending.date.day) + "\n"
 	return render_to_response('gastosapp/export.htm', {'export':text})
 
+@login_required
 def exportCSV(request):
 	# https://docs.djangoproject.com/en/1.2/howto/outputting-csv/
 	# using the template system because it's cleanner for Unicode chars
@@ -396,6 +404,7 @@ def exportCSV(request):
 
 #def month_graph(request):
 
+@login_required
 def report_cash(request):
 	if not request.GET.get('payment',False):
 		payments = ['Dinheiro']

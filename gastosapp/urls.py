@@ -5,9 +5,11 @@ from gastosapp.models import *
 
 urlpatterns = patterns('',
 	(r'^$', 'gastosapp.views.index'),
+#	(r'^index$', 'gastosapp.views.index'),
 	#(r'^login$', 'gastosapp.views.login'),
 	(r'^login$', 'django.contrib.auth.views.login', {'template_name': 'gastosapp/login.htm'}),
-	(r'^logout$', 'gastosapp.views.logout'),
+#	(r'^logout$', 'gastosapp.views.logout'),
+	(r'^logout$', 'django.contrib.auth.views.logout_then_login'),
 	(r'^month_view$', 'gastosapp.views.month_view'),
 	(r'^save$', 'gastosapp.views.save'),
 	(r'^import_form$', 'gastosapp.views.import_form'),

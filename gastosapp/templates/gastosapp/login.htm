@@ -30,11 +30,11 @@
 </head>
 <body>
 
-{% if form.errors %}
-<p>Errors:{{form.errors}}</p>
-{% else %}
-<p>No errors!</p>
-{% endif %}
+{#{% if form.errors %}#}
+{#<p>Errors:{{form.errors}}</p>#}
+{#{% else %}#}
+{#<p>No errors!</p>#}
+{#{% endif %}#}
 
 <div class="container">
 	<div class="content">
@@ -49,8 +49,13 @@
 			<form method="post" action="{% url django.contrib.auth.views.login %}">
 				{% csrf_token %}
 				<h2>Login</h2>
-				<input id="username" name="username" type="text" placeholder="Account">
-				<input id="password" name="password" type="password" placeholder="Password">
+				{% if form.errors %}
+				<div class="control-group error">
+					<span class="help-inline">Please enter a correct username and password</span>
+				</div>
+				{% endif %}
+				<input id="username" name="{{ form.username.html_name }}" type="text" placeholder="Account"{% if form.username.value %} value="{{ form.username.value }}"{% endif %}>
+				<input id="password" name="{{ form.password.html_name }}" type="password" placeholder="Password"{% if form.password.value %} value="{{ form.password.value }}"{% endif %}>
 				<button class="btn btn-primary" type="submit">Login</button>
 				<input type="hidden" name="next" value="{{ next }}" />
 			</form>

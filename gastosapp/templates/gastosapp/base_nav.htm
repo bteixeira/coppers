@@ -3,19 +3,20 @@
 	<div class="navbar navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container" style="width: auto;">
-				<a class="brand" href="#">Coppers</a>
+				<a class="brand" href="{% url gastosapp.views.index %}">Coppers</a>
 				<div class="nav-collapse">
 					<ul class="nav">
-						<li><a href="month_view">Month View</a></li>
-						<li><a href="stats">All-time Stats</a></li>
-						<li><a href="report_cash">Cash Report</a></li>
+						<li><a href="{% url gastosapp.views.month_view %}">Month View</a></li>
+						<li><a href="{% url gastosapp.views.stats %}">All-time Stats</a></li>
+						<li><a href="{% url gastosapp.views.report_cash %}">Cash Report</a></li>
 					</ul>
 					<ul class="nav pull-right">
-						<li><a href="exportCSV">Export CSV</a></li>
-						<li><a href="export">Export Batch</a></li>
-						<li><a href="import_form">Import Batch</a></li>
+						<li><a href="{% url gastosapp.views.exportCSV %}">Export CSV</a></li>
+						<li><a href="{% url gastosapp.views.export %}">Export Batch</a></li>
+						<li><a href="{% url gastosapp.views.import_form %}">Import Batch</a></li>
 						<li class="divider-vertical"></li>
-						<li><a href="#">Logout</a></li>
+						<li class="active"><a href="#">{{ user.username }}</a></li>
+						<li><a href="{% url django.contrib.auth.views.logout_then_login %}">Logout</a></li>
 					</ul>
 				</div>
 			</div>
