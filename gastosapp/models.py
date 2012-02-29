@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Code(models.Model):
 	code = models.CharField(max_length=32)
@@ -41,14 +42,13 @@ class Spending(models.Model):
 	amount = models.CharField(max_length=200, null=True, blank=True)
 	date = models.DateTimeField(null=True)
 	type = models.ForeignKey(SpendingType, null=True, blank=True)
-	code = models.ForeignKey(Code, null=True)
+#	code = models.ForeignKey(Code, null=True)
 	payment = models.ForeignKey(PaymentType, null=True, blank=True)
-	#nothing to see here
-	#still nothing
+	user = models.ForeignKey(User)
 
 	def __unicode__(self):
 		result = '{SPENT ' + str(self.value) + ' @ ' + str(self.date)
-		if self.description != None:
+		if self.description is not None:
 			result += ' ON ' + self.description.__unicode__()
 		result += '}'
 		return result

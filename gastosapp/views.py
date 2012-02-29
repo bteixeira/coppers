@@ -2,13 +2,12 @@
 
 from django.core.urlresolvers import *
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import  render_to_response
 from django.template import RequestContext, loader, Context
 from gastosapp.models import *
 from django.contrib.auth.decorators import login_required
 import datetime
 import string
-import csv
 
 @login_required
 def index(request):
@@ -44,12 +43,12 @@ def month_view(request):
 	m = dateStart.month
 	y = dateStart.year
 	print '!!! ' + str(m) + '/' + str(y)
-	dates.append({'month': m, 'year': y});
+	dates.append({'month': m, 'year': y})
 	while m != dateEnd.month or y != dateEnd.year:
 		m = (m % 12) + 1
 		if m == 1:
 			y += 1
-		dates.append({'month': m, 'year': y});
+		dates.append({'month': m, 'year': y})
 		print '!!! ' + str(m) + '/' + str(y)
 	#for i in range(dateStart.month, dateEnd.month):
 	#for i in range(1, 13):
@@ -79,14 +78,15 @@ def month_view(request):
 		month_prev_year = month_next_year = year
 	year_next = year + 1
 	year_prev = year - 1
-	code = get_code(code)
+#	code = get_code(code)
 	print 'code: ' + str(code)
-	spendings = code.spending_set.filter(date__month=month,date__year=year)
+	#spendings = code.spending_set.filter(date__month=month,date__year=year)
+	spendings = request.user.spending_set.filter(date__month=month,date__year=year)
 	day_colors = get_day_colors(month, year)
 	payment_types = PaymentType.objects.order_by('name')
 	print spendings
 	return render_to_response('gastosapp/month_view.htm',
-							{'code': code, 'month': month, 'year': year,
+							{'month': month, 'year': year,
 							'month_prev': month_prev,
 							'month_next': month_next,
 							'month_prev_year': month_prev_year,
@@ -104,14 +104,15 @@ def month_view(request):
 	#return HttpResponseRedirect(reverse('gastosapp.views.month_view'))
 	#return render_to
 
-def logout(request):
-	del request.session['code']
-	return HttpResponseRedirect(reverse('gastosapp.views.index'))
+#def logout(request):
+#	del request.session['code']
+#	return HttpResponseRedirect(reverse('gastosapp.views.index'))
 
 @login_required
 def save(request):
+	# TODO only allow saving one's own spendings
 	#code = request.GET['code']
-	code = get_code('bteixeira')
+	#code = get_code('bteixeira')
 	month = int(request.POST['month'])
 	year = int(request.POST['year'])
 	i = 0
@@ -168,73 +169,73 @@ def save(request):
 #			spending.save()
 			if not amount:
 				amount = 0
-			add_spending(descr,type,amount,year,month,day,payment_type_id)
+			add_spending(descr,type,amount,year,month,day,payment_type_id,request.user)
 			print '  saved'
 		else:
 			print '  no data'
 		i += 1
 	return HttpResponseRedirect(reverse('gastosapp.views.month_view') + '?year=' + str(year) + '&month=' + str(month))
 	
-def get_code(code):
-	codes = Code.objects.filter(code=code)
-	if not codes.exists():
-		code = Code(code=code,metainfo='')
-		code.save()
-	else:
-		code = codes[0]
-	return code
+#def get_code(code):
+#	codes = Code.objects.filter(code=code)
+#	if not codes.exists():
+#		code = Code(code=code,metainfo='')
+#		code.save()
+#	else:
+#		code = codes[0]
+#	return code
 
-def get_code_from_request(request):
-	code = request.session['code']
-	return code
+#def get_code_from_request(request):
+#	code = request.session['code']
+#	return code
 
-@login_required
-def stats_old(request):
-	years = {}
-	totals = {}
-	if not Spending.objects.all().exists():
-		return render_to_response('gastosapp/stats.htm', {'years': years, 'totals': totals})
-	dateStart = Spending.objects.order_by('date')[0].date
-	print 'start date: ' + str(dateStart)
-	dateEnd = Spending.objects.order_by('-date')[0].date
-	print 'end date: ' + str(dateEnd)
-	m = dateStart.month
-	y = dateStart.year
-	totals['Total'] = {}
-	while y < dateEnd.year or (y == dateEnd.year and m <= dateEnd.month):
-		total = 0
-		print 'iteration, m=' + str(m) + ' y=' + str(y)
-		if not years.get(y, False):
-			years[y] = [m]
-		else:
-			years[y].append(m)
-		for type in SpendingType.objects.all():
-			print '  type: ' + str(type)
-			sum = 0
-			for s in type.spending_set.filter(date__month=m,date__year=y):
-				sum += s.value
-			if not totals.get(type.description, False):
-				totals[type.description] = {y:{m:sum}}
-			else:
-				if not totals[type.description].get(y, False):
-					totals[type.description][y] = {m:sum}
-				else:
-					totals[type.description][y][m] = sum
-			total += sum
-		if not totals.get('Total', False):
-			totals['Total'] = {y:{m:total}}
-		else:
-			if not totals['Total'].get(y, False):
-				totals['Total'][y] = {m:total}
-			else:
-				totals['Total'][y][m] = total
-		m += 1
-		if m > 12:
-			m = 1
-			y += 1
-	print 'years: ' + str(years)
-	print 'totals: ' + str(totals)
-	return render_to_response('gastosapp/stats.htm', {'years': years, 'totals': sorted(totals.items())})
+#@login_required
+#def stats_old(request):
+#	years = {}
+#	totals = {}
+#	if not Spending.objects.all().exists():
+#		return render_to_response('gastosapp/stats.htm', {'years': years, 'totals': totals})
+#	dateStart = Spending.objects.order_by('date')[0].date
+#	print 'start date: ' + str(dateStart)
+#	dateEnd = Spending.objects.order_by('-date')[0].date
+#	print 'end date: ' + str(dateEnd)
+#	m = dateStart.month
+#	y = dateStart.year
+#	totals['Total'] = {}
+#	while y < dateEnd.year or (y == dateEnd.year and m <= dateEnd.month):
+#		total = 0
+#		print 'iteration, m=' + str(m) + ' y=' + str(y)
+#		if not years.get(y, False):
+#			years[y] = [m]
+#		else:
+#			years[y].append(m)
+#		for type in SpendingType.objects.all():
+#			print '  type: ' + str(type)
+#			sum = 0
+#			for s in type.spending_set.filter(date__month=m,date__year=y):
+#				sum += s.value
+#			if not totals.get(type.description, False):
+#				totals[type.description] = {y:{m:sum}}
+#			else:
+#				if not totals[type.description].get(y, False):
+#					totals[type.description][y] = {m:sum}
+#				else:
+#					totals[type.description][y][m] = sum
+#			total += sum
+#		if not totals.get('Total', False):
+#			totals['Total'] = {y:{m:total}}
+#		else:
+#			if not totals['Total'].get(y, False):
+#				totals['Total'][y] = {m:total}
+#			else:
+#				totals['Total'][y][m] = total
+#		m += 1
+#		if m > 12:
+#			m = 1
+#			y += 1
+#	print 'years: ' + str(years)
+#	print 'totals: ' + str(totals)
+#	return render_to_response('gastosapp/stats.htm', {'years': years, 'totals': sorted(totals.items())})
 
 @login_required
 def stats(request):
@@ -242,7 +243,9 @@ def stats(request):
 	totals = {}
 	unassigned = {}
 	keys = []
-	for spending in Spending.objects.all():
+	spendings = request.user.spending_set.all()
+#	for spending in Spending.objects.all():
+	for spending in spendings:
 		if not spending.type:
 			type = None
 		else:
@@ -289,8 +292,12 @@ def stats(request):
 	keys = ['Total', 'Sem Descr'] + keys
 	print 'keys: ' + str(keys)
 	print 'totals: ' + str(blabla)
-	return render_to_response('gastosapp/stats.htm', {'keys': keys, 'totals': blabla})
+	return render_to_response('gastosapp/stats.htm',
+			{'keys': keys, 'totals': blabla},
+			context_instance=RequestContext(request))
 
+### Returns the Description model object for the given string. If there is more
+### than one (which should not happen) it returns the first one
 def get_description(descr):
 	spDescrs = SpendingDescription.objects.filter(description=descr)
 	if not spDescrs.exists():
@@ -311,12 +318,12 @@ def get_type(type):
 		spType = spTypes[0]
 	return spType
 
-def add_spending(description, type, value, year, month, day, payment):
+def add_spending(description, type, value, year, month, day, payment, user):
 	#print 'putting values: ' + str(description) + '|' + str(type) + '|' + str(value) + '|' + str(year) + '|' + str(month) + '|' + str(day)
 	spDescr = get_description(description)
 	spType = get_type(type)
-	code = get_code('bteixeira')
-	sp = Spending(description=spDescr, type=spType, value=value, date=datetime.date(year,month,day), code=code, payment_id=payment)
+	#code = get_code('bteixeira')
+	sp = Spending(description=spDescr, type=spType, value=value, date=datetime.date(year,month,day), payment_id=payment, user=user)
 	sp.save()
 	#print '  spending saved, id: ' + str(sp.id)
 
@@ -351,11 +358,12 @@ def import_form(request):
 @login_required
 def export(request):
 	text = ''
-	for spending in Spending.objects.all():
-		if spending.description != None:
+	spendings = request.user.spending_set.all()
+	for spending in spendings:
+		if spending.description is not None:
 			text += spending.description.description
 		text += "|"
-		if spending.type != None:
+		if spending.type is not None:
 			text += spending.type.description
 		text += "|"
 		text += str(spending.value) + "|"
@@ -369,13 +377,14 @@ def exportCSV(request):
 	# https://docs.djangoproject.com/en/1.2/howto/outputting-csv/
 	# using the template system because it's cleanner for Unicode chars
 	response = HttpResponse(mimetype='text/csv')
-	now = datetime.datetime.now();
+	now = datetime.datetime.now()
 	response['Content-Disposition'] = 'attachment; filename=export_' + now.strftime("%Y_%m_%d_%H%M%S") + '.csv'
 	
 	csv_data = [
 			('Description', 'Value', 'Type', 'Payment Type')
 	]
-	for spending in Spending.objects.all():
+	spendings = request.user.spending_set.all()
+	for spending in spendings:
 		if spending.description is None:
 			description = ''
 		else:
@@ -421,7 +430,8 @@ def report_cash(request):
 	else:
 		year = int(request.GET['year'])
 
-	spendings_raw = Spending.objects.filter(date__month=month,date__year=year,payment__name__in=payments).order_by('date')
+	user_spendings = request.user.spending_set
+	spendings_raw = user_spendings.filter(date__month=month,date__year=year,payment__name__in=payments).order_by('date')
 	spendings = []
 	total = 0
 	for spending in spendings_raw:
@@ -446,4 +456,4 @@ def report_cash(request):
 	    'month': month,
 	    'year': year,
 	    'payments': ', '.join(payments)
-	})
+	}, context_instance=RequestContext(request))
