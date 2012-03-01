@@ -1,13 +1,4 @@
 {% extends "gastosapp/base_nav.htm" %}
-{% comment %}
-<html>
-<head>
-	<title>Gastos</title>
-	<script type="text/javascript" src="media/jquery-1.5.2.js"></script>
-    <script type="text/javascript" src="media/date.js"></script>
-{#    <script type="text/javascript" src="media/datejs-all/date-pt-PT.js"></script>#}
-{#    <script type="text/javascript" src="media/datejs-all/date-en-US.js"></script>#}
-{% endcomment %}
 {% block main_content %}
 	<script type="text/javascript">
 		
@@ -416,83 +407,6 @@
 		<strong>Code:</strong>&nbsp;{{ code }}
 	</div>
 
-	{% comment %}
-	<form id="form_test" action="save" method="post">
-		<table class="table table-condensed table-bordered table-striped">
-		<tbody>
-			<tr>
-				<td style="text-align: center; vertical-align: middle;">
-					<strong>Wed 01</strong>
-					<br>
-					Total &euro; 4,47
-				</td>
-				<td style="text-align: center; vertical-align: bottom;">
-					<button class="btn btn-small" type="button" onclick="test_addRow()"><i class="icon-plus"></i></button>
-				</td>
-				<td>
-					<div class="row span12">
-						<input type="text" placeholder="Description..." class="span5">
-						<input type="text" placeholder="&euro; 0,00" style="text-align: right;" class="span1">
-						<input type="text" placeholder="Category:Subcategory:Subsub..." class="span2">
-						<select class="span2">
-							<option value="" selected="selected">Payment...</option>
-							<option>Card</option>
-							<option>Cash</option>
-							<option>Transfer</option>
-						</select>
-					</div>
-					<div class="row span12">
-						<input type="text" placeholder="Description..." class="span5">
-						<input type="text" placeholder="&euro; 0,00" style="text-align: right;" class="span1">
-						<input type="text" placeholder="Category:Subcategory:Subsub..." class="span2">
-						<select class="span2">
-							<option value="" selected="selected">Payment...</option>
-							<option>Card</option>
-							<option>Cash</option>
-							<option>Transfer</option>
-						</select>
-					</div>
-					<div class="row span12">
-						<input type="text" placeholder="Description..." class="span5">
-						<input type="text" placeholder="&euro; 0,00" style="text-align: right;" class="span1">
-						<input type="text" placeholder="Category:Subcategory:Subsub..." class="span2">
-						<select class="span2">
-							<option value="" selected="selected">Payment...</option>
-							<option>Card</option>
-							<option>Cash</option>
-							<option>Transfer</option>
-						</select>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="text-align: center; vertical-align: middle;">
-					<strong>Thu 02</strong>
-					<br>
-					Total &euro; 8,41
-				</td>
-				<td style="text-align: center; vertical-align: bottom;">
-					<button class="btn btn-small" type="button" onclick="test_addRow()"><i class="icon-plus"></i></button>
-				</td>
-				<td>
-					<div class="row span12">
-						<input type="text" placeholder="Description..." class="span5">
-						<input type="text" placeholder="&euro; 0,00" style="text-align: right;" class="span1">
-						<input type="text" placeholder="Category:Subcategory:Subsub..." class="span2">
-						<select class="span2">
-							<option value="" selected="selected">Payment...</option>
-							<option>Card</option>
-							<option>Cash</option>
-							<option>Transfer</option>
-						</select>
-					</div>
-				</td>
-			</tr>
-		</tbody>
-		</table>
-	</form>
-	{% endcomment %}
-
 	<form id="form1" action="save" method="post">
 		{% csrf_token %}
 		<input type="hidden" name="code" value="{{ code.code }}">
@@ -511,4 +425,3 @@
 		</div>
 	</form>
 {% endblock %}
-

@@ -11,9 +11,6 @@ import string
 
 @login_required
 def index(request):
-	#if (request.session.get('code', False)):
-	#	return render_to_response('gastosapp/index.htm', context_instance=RequestContext(request))
-	#else:
 	return HttpResponseRedirect(reverse('gastosapp.views.month_view'))
 
 def get_day_colors(month, year):
@@ -32,8 +29,6 @@ def get_day_colors(month, year):
 
 @login_required
 def month_view(request):
-	#code = get_code_from_request(request)
-	#code = request.session['code']
 	code = 'bteixeira'
 	dateStart = Spending.objects.order_by('date')[0].date
 	dateEnd = Spending.objects.order_by('-date')[0].date
@@ -50,9 +45,6 @@ def month_view(request):
 			y += 1
 		dates.append({'month': m, 'year': y})
 		print '!!! ' + str(m) + '/' + str(y)
-	#for i in range(dateStart.month, dateEnd.month):
-	#for i in range(1, 13):
-	#	months.append(i) 
 	if not request.GET.get('month',False):
 		month = int(datetime.datetime.now().month)
 	else:
@@ -78,9 +70,7 @@ def month_view(request):
 		month_prev_year = month_next_year = year
 	year_next = year + 1
 	year_prev = year - 1
-#	code = get_code(code)
 	print 'code: ' + str(code)
-	#spendings = code.spending_set.filter(date__month=month,date__year=year)
 	spendings = request.user.spending_set.filter(date__month=month,date__year=year)
 	day_colors = get_day_colors(month, year)
 	payment_types = PaymentType.objects.order_by('name')
@@ -98,21 +88,9 @@ def month_view(request):
 							'payment_types': payment_types,
 							'dates': dates}, context_instance=RequestContext(request))
 
-#def login(request):
-	#code = request.POST['code']
-	#request.session['code'] = code
-	#return HttpResponseRedirect(reverse('gastosapp.views.month_view'))
-	#return render_to
-
-#def logout(request):
-#	del request.session['code']
-#	return HttpResponseRedirect(reverse('gastosapp.views.index'))
-
 @login_required
 def save(request):
 	# TODO only allow saving one's own spendings
-	#code = request.GET['code']
-	#code = get_code('bteixeira')
 	month = int(request.POST['month'])
 	year = int(request.POST['year'])
 	i = 0
@@ -154,19 +132,6 @@ def save(request):
 				print '  saved'
 		elif descr or amount or type:
 			print '  not exists'
-#			spending = Spending()
-#			spDescr = SpendingDescription(description=descr)
-#			spDescr.save()
-#			spending.description = spDescr
-#			if amount:
-#				spending.value = amount
-#			spType = SpendingType(description=type)
-#			spType.save()
-#			spending.type = spType
-#			now = datetime.datetime.now()
-#			spending.date = datetime.date(now.year, now.month, int(day))
-#			spending.code = code
-#			spending.save()
 			if not amount:
 				amount = 0
 			add_spending(descr,type,amount,year,month,day,payment_type_id,request.user)
@@ -176,67 +141,6 @@ def save(request):
 		i += 1
 	return HttpResponseRedirect(reverse('gastosapp.views.month_view') + '?year=' + str(year) + '&month=' + str(month))
 	
-#def get_code(code):
-#	codes = Code.objects.filter(code=code)
-#	if not codes.exists():
-#		code = Code(code=code,metainfo='')
-#		code.save()
-#	else:
-#		code = codes[0]
-#	return code
-
-#def get_code_from_request(request):
-#	code = request.session['code']
-#	return code
-
-#@login_required
-#def stats_old(request):
-#	years = {}
-#	totals = {}
-#	if not Spending.objects.all().exists():
-#		return render_to_response('gastosapp/stats.htm', {'years': years, 'totals': totals})
-#	dateStart = Spending.objects.order_by('date')[0].date
-#	print 'start date: ' + str(dateStart)
-#	dateEnd = Spending.objects.order_by('-date')[0].date
-#	print 'end date: ' + str(dateEnd)
-#	m = dateStart.month
-#	y = dateStart.year
-#	totals['Total'] = {}
-#	while y < dateEnd.year or (y == dateEnd.year and m <= dateEnd.month):
-#		total = 0
-#		print 'iteration, m=' + str(m) + ' y=' + str(y)
-#		if not years.get(y, False):
-#			years[y] = [m]
-#		else:
-#			years[y].append(m)
-#		for type in SpendingType.objects.all():
-#			print '  type: ' + str(type)
-#			sum = 0
-#			for s in type.spending_set.filter(date__month=m,date__year=y):
-#				sum += s.value
-#			if not totals.get(type.description, False):
-#				totals[type.description] = {y:{m:sum}}
-#			else:
-#				if not totals[type.description].get(y, False):
-#					totals[type.description][y] = {m:sum}
-#				else:
-#					totals[type.description][y][m] = sum
-#			total += sum
-#		if not totals.get('Total', False):
-#			totals['Total'] = {y:{m:total}}
-#		else:
-#			if not totals['Total'].get(y, False):
-#				totals['Total'][y] = {m:total}
-#			else:
-#				totals['Total'][y][m] = total
-#		m += 1
-#		if m > 12:
-#			m = 1
-#			y += 1
-#	print 'years: ' + str(years)
-#	print 'totals: ' + str(totals)
-#	return render_to_response('gastosapp/stats.htm', {'years': years, 'totals': sorted(totals.items())})
-
 @login_required
 def stats(request):
 	sums = {}
@@ -244,7 +148,6 @@ def stats(request):
 	unassigned = {}
 	keys = []
 	spendings = request.user.spending_set.all()
-#	for spending in Spending.objects.all():
 	for spending in spendings:
 		if not spending.type:
 			type = None
@@ -303,10 +206,8 @@ def get_description(descr):
 	if not spDescrs.exists():
 		spDescr = SpendingDescription(description=descr)
 		spDescr.save()
-		#print '  new descr saved, id: ' + str(spDescr.id)
 	else:
 		spDescr = spDescrs[0]
-		#print '  descr exists, id: ' + str(sd.id)
 	return spDescr
 
 def get_type(type):
@@ -319,30 +220,32 @@ def get_type(type):
 	return spType
 
 def add_spending(description, type, value, year, month, day, payment, user):
-	#print 'putting values: ' + str(description) + '|' + str(type) + '|' + str(value) + '|' + str(year) + '|' + str(month) + '|' + str(day)
 	spDescr = get_description(description)
 	spType = get_type(type)
-	#code = get_code('bteixeira')
 	sp = Spending(description=spDescr, type=spType, value=value, date=datetime.date(year,month,day), payment_id=payment, user=user)
 	sp.save()
-	#print '  spending saved, id: ' + str(sp.id)
 
 @login_required
-def import_spendings(request):
+def importCSV(request):
 	text = request.POST['spendings']
+	reader = csv.reader(text)
+	for line in reader:
+		date = line[0]
+		descr = line[1]
+		value = int()
 	lines = text.splitlines()
 	lines = filter(lambda str : str != '', lines)
 	added = ignored = 0
 	print ' lines: ' + str(lines)
 	for line in lines:
-		args = string.split(line, '|')
+		args = string.split(line, ';')
 		print '  args: ' + str(args)
 		args = [arg.strip() for arg in args]
 		print '  args: ' + str(args)
 		args = [arg.strip("'") for arg in args]
 		print '  args: ' + str(args)
 		if len(args) == 6:
-			add_spending(args[0], args[1], args[2], int(args[3]), int(args[4]), int(args[5]))
+			add_spending(args[1], args[3], args[4], request.user)
 			added += 1
 		else:
 			ignored += 1
@@ -352,25 +255,8 @@ def import_spendings(request):
 	return render_to_response('gastosapp/import_done.htm', {'added':added, 'ignored':ignored})
 
 @login_required
-def import_form(request):
-	return render_to_response('gastosapp/import_form.htm', context_instance=RequestContext(request))
-
-@login_required
-def export(request):
-	text = ''
-	spendings = request.user.spending_set.all()
-	for spending in spendings:
-		if spending.description is not None:
-			text += spending.description.description
-		text += "|"
-		if spending.type is not None:
-			text += spending.type.description
-		text += "|"
-		text += str(spending.value) + "|"
-		text += str(spending.date.year) + "|"
-		text += str(spending.date.month) + "|"
-		text += str(spending.date.day) + "\n"
-	return render_to_response('gastosapp/export.htm', {'export':text})
+def importCSV_form(request):
+	return render_to_response('gastosapp/importCSV_form.htm', context_instance=RequestContext(request))
 
 @login_required
 def exportCSV(request):
@@ -381,7 +267,7 @@ def exportCSV(request):
 	response['Content-Disposition'] = 'attachment; filename=export_' + now.strftime("%Y_%m_%d_%H%M%S") + '.csv'
 	
 	csv_data = [
-			('Description', 'Value', 'Type', 'Payment Type')
+			('Date', 'Description', 'Value', 'Type', 'Payment Type')
 	]
 	spendings = request.user.spending_set.all()
 	for spending in spendings:
@@ -401,7 +287,7 @@ def exportCSV(request):
 			payment = spending.payment.name
 
 		csv_data.append(
-			(description, spending.value, type, payment)
+			(spending.date.date(), description, spending.value, type, payment)
 		)
 	
 	t = loader.get_template('gastosapp/csv_template.txt')
@@ -410,8 +296,6 @@ def exportCSV(request):
 	})
 	response.write(t.render(c))
 	return response
-
-#def month_graph(request):
 
 @login_required
 def report_cash(request):
