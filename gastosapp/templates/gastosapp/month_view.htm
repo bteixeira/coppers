@@ -35,7 +35,7 @@
 		        style = ''
 	        }
 			return style;
-		};
+		}
 		
 		function getCellSpending (day) {
 			if (day !== 0 && !day) {
@@ -76,6 +76,10 @@
             return text;
         }
 
+		function addSpendingToDay(day) {
+			$('#spendings_day_' + day).append(getCellSpending(day));
+		}
+
         function getRowDay_old(day) {
 			var text = '\
 				<tr id="row_day_' + day + '"' + getDayStyle(day) + '>\
@@ -103,7 +107,7 @@
 						Total &euro; XXX\
 					</td>\
 					<td style="text-align: center; vertical-align: bottom;" class="plus_sign">\
-						<button class="btn btn-small" type="button" onclick="test_addRow()"><i class="icon-plus"></i></button>\
+						<button class="btn btn-small" type="button" onclick="addSpendingToDay(' + day + ')"><i class="icon-plus"></i></button>\
 					</td>\
 					<td id="spendings_day_' + day + '" class="spendings_cell">\
 					' + getCellSpending(day) + '\
