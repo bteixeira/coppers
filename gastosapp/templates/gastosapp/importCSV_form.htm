@@ -1,7 +1,7 @@
 {% extends "gastosapp/base_nav.htm" %}
 {% block main_title %}Import Batch{% endblock %}
 {%  block main_content %}
-<form id="form1" action="import" method="post">
+<form id="form1" action="{% url gastosapp.views.importCSV %}" method="post">
 	{% csrf_token %}
 	<div>
 		<textarea rows="12" class="span10" name="spendings"></textarea>

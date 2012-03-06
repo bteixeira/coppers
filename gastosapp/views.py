@@ -1,5 +1,6 @@
 # coding=utf-8
 
+import csv
 from django.core.urlresolvers import *
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import  render_to_response
@@ -8,6 +9,9 @@ from gastosapp.models import *
 from django.contrib.auth.decorators import login_required
 import datetime
 import string
+from datetime import *
+import StringIO
+from gastosapp.unicoder import *
 
 @login_required
 def index(request):
@@ -46,11 +50,11 @@ def month_view(request):
 		dates.append({'month': m, 'year': y})
 		print '!!! ' + str(m) + '/' + str(y)
 	if not request.GET.get('month',False):
-		month = int(datetime.datetime.now().month)
+		month = int(datetime.now().month)
 	else:
 		month = int(request.GET['month'])
 	if not request.GET.get('year',False):
-		year = int(datetime.datetime.now().year)
+		year = int(datetime.now().year)
 	else:
 		year = int(request.GET['year'])
 	print 'month: ' + str(month)
@@ -219,40 +223,60 @@ def get_type(type):
 		spType = spTypes[0]
 	return spType
 
+def get_payment(payment):
+	spPayments = PaymentType.objects.filter(name=payment)
+	if not spPayments.exists():
+		spPayment = PaymentType(name=payment)
+		spPayment.save()
+	else:
+		spPayment = spPayments[0]
+	return spPayment
+
 def add_spending(description, type, value, year, month, day, payment, user):
 	spDescr = get_description(description)
 	spType = get_type(type)
-	sp = Spending(description=spDescr, type=spType, value=value, date=datetime.date(year,month,day), payment_id=payment, user=user)
+	sp = Spending(description=spDescr, type=spType, value=value, date=date(year,month,day), payment=payment, user=user)
 	sp.save()
 
 @login_required
 def importCSV(request):
+	added = 0
 	text = request.POST['spendings']
-	reader = csv.reader(text)
+	sio = StringIO.StringIO(text)
+	#reader = csv.reader(sio)
+	#reader = UnicodeReader(sio)
+	reader = unicode_csv_reader(sio)
 	for line in reader:
-		date = line[0]
-		descr = line[1]
-		value = int()
-	lines = text.splitlines()
-	lines = filter(lambda str : str != '', lines)
-	added = ignored = 0
-	print ' lines: ' + str(lines)
-	for line in lines:
-		args = string.split(line, ';')
-		print '  args: ' + str(args)
-		args = [arg.strip() for arg in args]
-		print '  args: ' + str(args)
-		args = [arg.strip("'") for arg in args]
-		print '  args: ' + str(args)
-		if len(args) == 6:
-			add_spending(args[1], args[3], args[4], request.user)
-			added += 1
-		else:
-			ignored += 1
-			print 'IGNORING: ' + str(args)
-	print 'added: ' + str(added)
-	print 'ignored: ' + str(ignored) 
-	return render_to_response('gastosapp/import_done.htm', {'added':added, 'ignored':ignored})
+		date = datetime.strptime(line[0], '%Y-%m-%d')
+		#print line
+		descr = get_description(line[1])
+		#value = float(line[2])
+		value = line[2]
+		type = get_type(line[3])
+		payment = get_payment(line[4])
+		add_spending(descr, type, value, date.year, date.month, date.day, payment, request.user)
+		added += 1
+#	lines = text.splitlines()
+#	lines = filter(lambda str : str != '', lines)
+#	added = ignored = 0
+#	print ' lines: ' + str(lines)
+#	for line in lines:
+#		args = string.split(line, ';')
+#		print '  args: ' + str(args)
+#		args = [arg.strip() for arg in args]
+#		print '  args: ' + str(args)
+#		args = [arg.strip("'") for arg in args]
+#		print '  args: ' + str(args)
+#		if len(args) == 6:
+#			add_spending(args[1], args[3], args[4], request.user)
+#			added += 1
+#		else:
+#			ignored += 1
+#			print 'IGNORING: ' + str(args)
+#	print 'added: ' + str(added)
+#	print 'ignored: ' + str(ignored)
+	ignored = 0
+	return render_to_response('gastosapp/import_done.htm', {'added':added, 'ignored':ignored}, context_instance=RequestContext(request))
 
 @login_required
 def importCSV_form(request):
@@ -263,12 +287,18 @@ def exportCSV(request):
 	# https://docs.djangoproject.com/en/1.2/howto/outputting-csv/
 	# using the template system because it's cleanner for Unicode chars
 	response = HttpResponse(mimetype='text/csv')
-	now = datetime.datetime.now()
+	now = datetime.now()
 	response['Content-Disposition'] = 'attachment; filename=export_' + now.strftime("%Y_%m_%d_%H%M%S") + '.csv'
-	
-	csv_data = [
-			('Date', 'Description', 'Value', 'Type', 'Payment Type')
+	#writer = csv.writer(response)
+	writer = UnicodeWriter(response)
+
+	#csv_data =
+	header = [
+	#(
+	'Date', 'Description', 'Value', 'Type', 'Payment Type'
+	#)
 	]
+	writer.writerow(header)
 	spendings = request.user.spending_set.all()
 	for spending in spendings:
 		if spending.description is None:
@@ -286,15 +316,18 @@ def exportCSV(request):
 		else:
 			payment = spending.payment.name
 
-		csv_data.append(
-			(spending.date.date(), description, spending.value, type, payment)
-		)
+#		csv_data.append(
+		#	(
+		#writer.writerow([spending.date.strftime('%Y-%m-%d'), description.encode('utf-8'), spending.value, type.encode('utf-8'), payment.encode('utf-8')])
+		writer.writerow([spending.date.strftime('%Y-%m-%d'), description, str(spending.value), type, payment])
+#		)
+
 	
-	t = loader.get_template('gastosapp/csv_template.txt')
-	c = Context({
-	    'data': csv_data,
-	})
-	response.write(t.render(c))
+#	t = loader.get_template('gastosapp/csv_template.txt')
+#	c = Context({
+#	    'data': csv_data,
+#	})
+#	response.write(t.render(c))
 	return response
 
 @login_required
@@ -305,12 +338,12 @@ def report_cash(request):
 		payments = request.GET['payment'].split(',')
 
 	if not request.GET.get('month',False):
-		month = int(datetime.datetime.now().month)
+		month = int(datetime.now().month)
 	else:
 		month = int(request.GET['month'])
 
 	if not request.GET.get('year',False):
-		year = int(datetime.datetime.now().year)
+		year = int(datetime.now().year)
 	else:
 		year = int(request.GET['year'])
 

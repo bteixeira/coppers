@@ -1,14 +1,5 @@
-<html>
-<head>
-	<title>Stats</title>
-	<script type="text/javascript" src="media/jquery-1.5.2.js"></script>
-	<script type="text/javascript" src="media/datejs-all/date-pt-PT.js"></script>
-	<script type="text/javascript" src="media/datejs-all/date-en-US.js"></script>
-</head>
-<body>
-	<h1>Import Done</h1>
-	<!--<div><a href="logout">Logout</a></div>-->
-	<div><a href="month_view">::&nbsp;Month View</a>&nbsp;::&nbsp;<a href="stats">All-time Stats</a>&nbsp;::&nbsp;<a href="import_form">Import Batch</a>&nbsp;::&nbsp;<a href="export">Export Batch</a>&nbsp;::&nbsp;<a href="exportCSV">Export CSV</a>&nbsp;::&nbsp;<a href="report_cash">Cash Report</a></div><p/>
-	<h6>There you go! Added {{ added }} spendings, ignored {{ ignored }}</h6>
-</body>
-</html>
+{% extends "gastosapp/base_nav.htm" %}
+{% block main_title %}Import Done{% endblock %}
+{%  block main_content %}
+	<h5>There you go! Added {{ added }} spendings, ignored {{ ignored }}</h5>
+{% endblock %}
