@@ -249,10 +249,12 @@ def importCSV(request):
 	for line in reader:
 		date = datetime.strptime(line[0], '%Y-%m-%d')
 		#print line
-		descr = get_description(line[1])
+		#descr = get_description(line[1])
+		descr = line[1]
 		#value = float(line[2])
 		value = line[2]
-		type = get_type(line[3])
+		#type = get_type(line[3])
+		type = line[3]
 		payment = get_payment(line[4])
 		add_spending(descr, type, value, date.year, date.month, date.day, payment, request.user)
 		added += 1
