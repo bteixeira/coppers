@@ -34,8 +34,12 @@ def get_day_colors(month, year):
 @login_required
 def month_view(request):
 	code = 'bteixeira'
-	dateStart = Spending.objects.order_by('date')[0].date
-	dateEnd = Spending.objects.order_by('-date')[0].date
+	if Spending.objects.exists():	
+		dateStart = Spending.objects.order_by('date')[0].date
+		dateEnd = Spending.objects.order_by('-date')[0].date
+	else:
+		dateStart = datetime.now()
+		dateEnd = dateStart
 	print 'start date: ' + str(dateStart)
 	print 'end date: ' + str(dateEnd)
 	dates = []
