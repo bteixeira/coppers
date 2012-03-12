@@ -10,4 +10,5 @@ gastosapp/testing/
 .idea/
 server.log
 settings.py
+gastos.wsgi
 
