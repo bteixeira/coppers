@@ -142,7 +142,7 @@ def save(request):
 			print '  not exists'
 			if not amount:
 				amount = 0
-			add_spending(descr,type,amount,year,month,day,payment_type_id,request.user)
+			add_spending(descr,type,amount,year,month,day,get_payment(payment_type_id),request.user)
 			print '  saved'
 		else:
 			print '  no data'
