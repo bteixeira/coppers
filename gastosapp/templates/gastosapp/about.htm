@@ -1,0 +1,19 @@
+{% extends "gastosapp/base_nav.htm" %}
+{% block main_title %}About this app{% endblock %}
+{%  block main_content %}
+	<div class="row">
+		<div class="span4">
+			<dl class="dl-horizontal">
+				<dt>What is this?</dt>
+				<dd>An online system for controlling your budget and keeping track of your personal spendings.
+					I'm still working on the name.</dd>
+				<dt>What else?</dt>
+				<dd>I think this is quite stable right now. I have tons of new features I want to add really soon.
+				I'm thinking about a feedback/issue reporting system too. If you are using this right now, you should know who to talk to if you want to give feedback (please do!)
+				</dd>
+				<dt>Configured version</dt>
+				<dd>{{ version }}</dd>
+			</dl>
+		</div>
+	</div>
+{% endblock %}

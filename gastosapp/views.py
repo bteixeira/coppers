@@ -12,6 +12,7 @@ import string
 from datetime import *
 import StringIO
 from gastosapp.unicoder import *
+import version
 
 @login_required
 def index(request):
@@ -30,6 +31,10 @@ def get_day_colors(month, year):
 			if not colors.has_key(i):
 				colors[i] = period.type.color
 	return colors
+
+@login_required
+def about(request):
+	return render_to_response('gastosapp/about.htm', {'version': version.VERSION}, context_instance=RequestContext(request))
 
 @login_required
 def month_view(request):
