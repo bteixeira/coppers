@@ -142,7 +142,8 @@ def save(request):
 			print '  not exists'
 			if not amount:
 				amount = 0
-			add_spending(descr,type,amount,year,month,day,get_payment(payment_type_id),request.user)
+			payment = PaymentType.objects.get(id=payment_type_id)
+			add_spending(descr,type,amount,year,month,day,payment,request.user)
 			print '  saved'
 		else:
 			print '  no data'
@@ -227,15 +228,6 @@ def get_type(type):
 		spType = spTypes[0]
 	return spType
 
-def get_payment(payment):
-	spPayments = PaymentType.objects.filter(name=payment)
-	if not spPayments.exists():
-		spPayment = PaymentType(name=payment)
-		spPayment.save()
-	else:
-		spPayment = spPayments[0]
-	return spPayment
-
 def add_spending(description, type, value, year, month, day, payment, user):
 	spDescr = get_description(description)
 	spType = get_type(type)
@@ -259,7 +251,7 @@ def importCSV(request):
 		value = line[2]
 		#type = get_type(line[3])
 		type = line[3]
-		payment = get_payment(line[4])
+		payment = get_payment_by_id(line[4])
 		add_spending(descr, type, value, date.year, date.month, date.day, payment, request.user)
 		added += 1
 #	lines = text.splitlines()
