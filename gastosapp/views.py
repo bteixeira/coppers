@@ -147,7 +147,11 @@ def save(request):
 			print '  not exists'
 			if not amount:
 				amount = 0
-			payment = PaymentType.objects.get(id=payment_type_id)
+			payments = PaymentType.objects.filter(id=payment_type_id)
+			if payments.exists():
+				payment = payments[0]
+			else:
+				payment = None
 			add_spending(descr,type,amount,year,month,day,payment,request.user)
 			print '  saved'
 		else:
