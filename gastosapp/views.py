@@ -260,10 +260,19 @@ def importCSV(request):
 		value = line[2]
 		#type = get_type(line[3])
 		type = line[3]
-		if line[4].isdigit():
-			payment = PaymentType.objects.get(id=line[4])
-		else:
+#		if line[4].isdigit():
+#			payment = PaymentType.objects.get(id=line[4])
+		if line[4] == '':
 			payment = None
+		else:
+			payments = PaymentType.objects.filter(name=line[4])
+			if payments.exists():
+				payment = payments[0]
+			else:
+				payment = PaymentType(name=line[4])
+				payment.save()
+#		else:
+#			payment = None
 		add_spending(descr, type, value, date.year, date.month, date.day, payment, request.user)
 		added += 1
 #	lines = text.splitlines()
