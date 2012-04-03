@@ -1,0 +1,4 @@
+[
+	{% for d in descriptions %}"{{ d.description }}"{% if not forloop.last %},{% endif %}
+	{% endfor %}
+]

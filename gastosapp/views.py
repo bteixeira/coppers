@@ -393,3 +393,18 @@ def report_cash(request):
 	    'year': year,
 	    'payments': ', '.join(payments)
 	}, context_instance=RequestContext(request))
+
+@login_required
+def get_descriptions(request):
+	descriptions = SpendingDescription.objects.all().order_by('description')
+	term = request.GET.get('term')
+	if term:
+		descriptions = descriptions.filter(description__istartswith=term)
+	limit = request.GET.get('limit')
+	if limit is None:
+		descriptions = descriptions[:10]
+	elif int(limit) > 0:
+		descriptions = descriptions[:limit]
+	return render_to_response('gastosapp/descriptions.htm', {
+		'descriptions': descriptions
+	}, context_instance=RequestContext(request))

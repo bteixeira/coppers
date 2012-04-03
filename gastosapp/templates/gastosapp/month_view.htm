@@ -1,7 +1,7 @@
 {% extends "gastosapp/base_nav.htm" %}
 {% block main_content %}
 	<script type="text/javascript">
-		
+
 		var spendings = 0;
 		var day_colors = {
 			{% for day, color in day_colors.items %}
@@ -36,28 +36,12 @@
 	        }
 			return style;
 		}
-		
+
 		function getCellSpending (day) {
 			if (day !== 0 && !day) {
 				throw "No day passed";
 			}
-			{% comment %}
-			var text = '\
-				<td style="border: 1px solid black;" class="spending" id="' + spendings + '">\
-					<div' + getDayStyle(day) + '><input class="descr" type="text" name="descr_' + spendings + '" id="descr_' + spendings + '"/></div>\
-					<div><input type="text" name="amount_' + spendings + '" id="amount_' + spendings + '" class="amount"/></div>\
-					<div><input type="text" name="type_' + spendings + '" id="type_' + spendings + '" class="type"/></div>\
-					<div><select name="payment_' + spendings + '" id="payment_' + spendings + '" class="payment">\
-						<option value=""></option>\{% for p in payment_types %}
-						<option value="{{ p.id }}">{{ p.name }}</option>\{% endfor %}
-					</select>\
-					<input type="hidden" name="spid_' + spendings + '" id="spid_' + spendings + '" class="spid"/>\
-					<input type="hidden" name="day_' + spendings + '" id="day_' + spendings + '" class="day" value="' + day + '"/>\
-				</td>';
-			{% endcomment %}
 			var text =
-				//'\
-				//<td id="spendings_day_' + day + '" class="spendings_cell">\
 					'<div class="row span12 spending" id="' + spendings + '">\
 						<input type="text" placeholder="Description..." class="span5 input_descr" name="descr_' + spendings + '" id="descr_' + spendings + '">\
 						<input type="text" placeholder="&euro; 0,00" style="text-align: right;" class="span1 input_amount" name="amount_' + spendings + '" id="amount_' + spendings + '">\
@@ -69,35 +53,13 @@
 						<input type="hidden" name="spid_' + spendings + '" id="spid_' + spendings + '" class="spid"/>\
 						<input type="hidden" name="day_' + spendings + '" id="day_' + spendings + '" class="day" value="' + day + '"/>\
 					</div>'
-				//</td>'
 				;
 
             spendings ++;
             return text;
         }
 
-		function addSpendingToDay(day) {
-			$('#spendings_day_' + day).append(getCellSpending(day));
-		}
-
-        function getRowDay_old(day) {
-			var text = '\
-				<tr id="row_day_' + day + '"' + getDayStyle(day) + '>\
-					<td class="total" style="border: solid 1px;"></td>\
-					<td class="day">' + day + '</td class="day"><td><div>Descr</div><div>Amount</div><div>Type</div></td>\
-					' + getCellSpending(day) + '\
-				</tr>';
-			return text;
-		}
 		function getRowDay(day) {
-//			var text = '\
-//				<tr id="row_day_' + day + '"' + getDayStyle(day) + '>\
-//					<td class="total" style="border: solid 1px;"></td>\
-//					<td class="day">' + day + '</td class="day">\
-//					<td><div>Descr</div><div>Amount</div><div>Type</div></td>\
-//					' + getCellSpending(day) + '\
-//				</tr>';
-
 
 			var text = '\
 				<tr id="row_day_' + day + '">\
@@ -151,7 +113,7 @@
 			} else {
 				var prevTd = prevTr.children().eq(index);
 				return prevTd;
-			}			
+			}
 		}
 		function getLowerCell(obj) {
 			var parentTd = $(obj).parent().parent();
@@ -162,7 +124,7 @@
 			} else {
 				var nextTd = nextTr.children().eq(index);
 				return nextTd;
-			}			
+			}
 		}
 		function getThisCell(obj) {
 			var parentTd = $(obj).parent().parent();
@@ -170,7 +132,7 @@
 		}
 		function goToLeft(obj, input) {
 			var prevTd = getLeftCell(obj);
-			if (prevTd != null) {
+			if (prevTd) {
 				prevTd.find('input.' + input).focus();
 				prevTd.find('input.' + input).select();
 			} else {
@@ -179,7 +141,7 @@
 		}
 		function goToRight(obj, input) {
 			var nextTd = getRightCell(obj);
-			if (nextTd == null) {
+			if (!nextTd) {
 				//alert ('This spending is empty.');
 			} else {
 				nextTd.find('input.' + input).focus();
@@ -187,7 +149,7 @@
 		}
 		function goUp(obj, input) {
 			var upperTd = getUpperCell(obj);
-			if (upperTd == null) {
+			if (!upperTd) {
 				//alert ('No spending above.');
 			} else {
 				upperTd.find('input.' + input).focus();
@@ -195,7 +157,7 @@
 		}
 		function goDown(obj, input) {
 			var lowerTd = getLowerCell(obj);
-			if (lowerTd == null) {
+			if (!lowerTd) {
 				//alert ('No spending below.');
 			} else {
 				lowerTd.find('input.' + input).focus();
@@ -205,7 +167,7 @@
 			var parentTd = getThisCell(obj);
 			parentTd.find('input.' + input).focus();
 		}
-		
+
 		function eventDescrLeft(obj) {
 			goToLeft(obj, 'descr');
 		}
@@ -242,32 +204,19 @@
 		function eventTypeDown(obj) {
 			goDown(obj, 'descr');
 		}
-		
-		/*
-		function putSpending(day, descr, amount, type) {
-			putSpending(day, descr, amount, type, null);
-		}
-		*/
-		
+
 		function recalc(day) {
-			//alert ('recalc ing');
 			var total = 0;
 			var tr = $('tr#row_day_' + day);
 			var spends = tr.find('input.amount');
 			spends.each(function() {
 				total += isNaN(parseFloat(this.value)) ? 0 : parseFloat(this.value);
-				//alert ('total: ' + total);
-				//alert ('value: ' + this.value);
-				//alert ('parse: ' + parseFloat(this.value));
 			});
-			//alert (total);
 			tr.find('td.total').text(total);
 		}
-		
+
 		function putSpending(day, descr, amount, type, spid, payment) {
-			//var tr = $('tr#row_day_' + day);
 			var td = $('td#spendings_day_' + day);
-			//var cells = tr.children('.spending');
 			var cells = td.children('.spending');
 			var freeCell = cells.filter(function(index) {
 				var inputs = $(this).find('input');
@@ -299,54 +248,56 @@
 			return id;
 		}
 		function initHandlers () {
-			$('input.descr').each(function() {$(this).keydown(function(e) {
-				if (e.which == 37) {
-					eventDescrLeft(this);
-				} else if (e.which == 39) {
-					eventDescrRight(this);
-				} else if (e.which == 38) {
-					eventDescrUp(this);
-				} else if (e.which == 40) {
-					eventDescrDown(this);
-				}
-			})});
-			$('input.amount').each(function() {$(this).keydown(function(e) {
-				if (e.which == 37) {
-					eventAmountLeft(this);
-				} else if (e.which == 39) {
-					eventAmountRight(this);
-				} else if (e.which == 38) {
-					eventAmountUp(this);
-				} else if (e.which == 40) {
-					eventAmountDown(this);
-				}
-			})});
-			$('input.type').each(function() {$(this).keydown(function(e) {
-				if (e.which == 37) {
-					eventTypeLeft(this);
-				} else if (e.which == 39) {
-					eventTypeRight(this);
-				} else if (e.which == 38) {
-					eventTypeUp(this);
-				} else if (e.which == 40) {
-					eventTypeDown(this);
-				}
-			})});
-			
-			// recalculate totals for each day
-			$('input.amount').each(function() {$(this).change(function(e) {
-				var day = $(this).parent().parent().children('input.day').attr('value');
-				recalc(day);
-			})});
+			$('.input_descr').autocomplete({
+				                                source:'/gastos/services/descriptions',
+				                                autoFocus:true,
+				                                delay:0
+			                                });
+//			$('input.descr').each(function() {$(this).keydown(function(e) {
+//				if (e.which == 37) {
+//					eventDescrLeft(this);
+//				} else if (e.which == 39) {
+//					eventDescrRight(this);
+//				} else if (e.which == 38) {
+//					eventDescrUp(this);
+//				} else if (e.which == 40) {
+//					eventDescrDown(this);
+//				}
+//			})});
+//			$('input.amount').each(function() {$(this).keydown(function(e) {
+//				if (e.which == 37) {
+//					eventAmountLeft(this);
+//				} else if (e.which == 39) {
+//					eventAmountRight(this);
+//				} else if (e.which == 38) {
+//					eventAmountUp(this);
+//				} else if (e.which == 40) {
+//					eventAmountDown(this);
+//				}
+//			})});
+//			$('input.type').each(function() {$(this).keydown(function(e) {
+//				if (e.which == 37) {
+//					eventTypeLeft(this);
+//				} else if (e.which == 39) {
+//					eventTypeRight(this);
+//				} else if (e.which == 38) {
+//					eventTypeUp(this);
+//				} else if (e.which == 40) {
+//					eventTypeDown(this);
+//				}
+//			})});
+//
+//			// recalculate totals for each day
+//			$('input.amount').each(function() {$(this).change(function(e) {
+//				var day = $(this).parent().parent().children('input.day').attr('value');
+//				recalc(day);
+//			})});
 		}
 		function addColumn () {
-			//$('#table1').find('tr').append(getCellSpending($(this)));
 			$('#table1').find('tr').each(function(index) {
-			//$('#table1').find('td.spendings_cell').each(function(index) {
 				$(this).append(
 					getCellSpending(
 						parseInt($(this).attr('id').substring(8), 10)
-						//parseInt($(this).attr('id').substring(14), 10)
 					)
 				);
 			});
@@ -354,13 +305,13 @@
 		}
 		function addCell (day) {
 			$('#table1').find('#spendings_day_' + day).each(function(index) {
-				$(this).append(
-						getCellSpending(
-//								parseInt($(this).attr('id').substring(14), 10)
-								day
-						)
-				);
+				$(this).append(getCellSpending(day));
 			});
+			initHandlers();
+		}
+
+		function addSpendingToDay(day) {
+			$('#spendings_day_' + day).append(getCellSpending(day));
 			initHandlers();
 		}
 		function fillTable() {
@@ -370,7 +321,7 @@
 				tbody.append(getRowDay(i));
 			}
 			initHandlers();
-			
+
 			{% if spendings %}
 			{% for sp in spendings %}
 			putSpending({{sp.date.day}}, '{{sp.description.description}}', '{{sp.value}}', '{{sp.type.description}}', '{{sp.id}}', '{{ sp.payment.id }}');
@@ -380,7 +331,7 @@
 				recalc(i);
 			}
 		}
-		
+
 		function setFormDate() {
 			var date = $('#select_date').val();
 			var month = date.substring(0, date.indexOf('/'));
@@ -390,6 +341,13 @@
 		}
 
 		$(document).ready(fillTable);
+
+		$('.input_descr').autocomplete({
+           source: '{% url gastosapp.views.get_descriptions %}',
+           autoFocus: true,
+           delay: 0
+       });
+
 	</script>
 	<div>
 		<strong>Month:</strong>
