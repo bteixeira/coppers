@@ -17,6 +17,7 @@ urlpatterns = patterns('',
 	(r'^report_cash$', 'gastosapp.views.report_cash'),
 
     (r'^services/descriptions$', 'gastosapp.views.get_descriptions'),
+    (r'^services/types', 'gastosapp.views.get_types'),
 
 #	(r'^media/(?P<path>.*\.js)$', 'django.views.static.serve', {'document_root': 'gastosapp/media/js/'}),
 	(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'gastosapp/media/'}),

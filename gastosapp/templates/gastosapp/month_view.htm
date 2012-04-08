@@ -249,10 +249,15 @@
 		}
 		function initHandlers () {
 			$('.input_descr').autocomplete({
-				                                source:'/gastos/services/descriptions',
-				                                autoFocus:true,
-				                                delay:0
-			                                });
+				                               source:'{% url gastosapp.views.get_descriptions %}',
+				                               autoFocus:true,
+				                               delay:0
+			                               });
+			$('.input_category').autocomplete({
+				                               source:'{% url gastosapp.views.get_types %}',
+				                               autoFocus:true,
+				                               delay:0
+			                               });
 //			$('input.descr').each(function() {$(this).keydown(function(e) {
 //				if (e.which == 37) {
 //					eventDescrLeft(this);
