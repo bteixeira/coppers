@@ -1,7 +1,25 @@
 {% extends "gastosapp/base_nav.htm" %}
 {% block main_title %}Report: Cash Usage{% endblock %}
 {% block main_content %}
-<h3>{{ year }}/{{ month }}, todos os pagamentos com ({{ payments }})</h3>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#input-date-start').datepicker({dateFormat: 'yy-mm-dd'});
+		$('#input-date-end').datepicker({dateFormat: 'yy-mm-dd'});
+	});
+</script>
+
+<h3>{{ year }}/{{ month }}</h3>
+<div>
+<form class="form-inline" method="post" action="{% url gastosapp.views.report_cash %}">
+	{% csrf_token %}
+	<label for="input-date-start">From</label><input id="input-date-start" name="date_start" placeholder="2000-01-01"{% if start %} value="{{ start|date:"Y-m-d" }}"{% endif %}>
+	<label for="input-date-end">To</label><input id="input-date-end" name="date_end" placeholder="2050-01-01"{% if end %} value="{{ end|date:"Y-m-d" }}"{% endif %}>
+	{% for payment in payments %}
+	<label for="payment_{{ payment.id }}">{{ payment.name }}</label><input type="checkbox" name="payment_{{ payment.id }}" id="payment_{{ payment.id }}">
+	{% endfor %}
+	<input type="submit" value="Go">
+</form>
+</div>
 <table class="table table-condensed table-bordered table-striped">
 	<thead>
 		<tr>
@@ -10,19 +28,21 @@
 			<th>Quanto</th>
 			<th>O qu&ecirc;</th>
 			<th>Tipo</th>
+			<th>Pagamento</th>
 		</tr>
 	</thead>
 	<tbody>
 		{% for spending in spendings %}
+			{% ifchanged spending.date %}</tbody></table><hr><table class="table table-condensed table-bordered table-striped"><tbody>{% endifchanged %}
 			<tr>
 				<td>{{ spending.total }}</td>
-				<td>{{ spending.date }}</td>
+				<td><strong>{{ spending.date|date:"j" }}</strong>-{{ spending.date|date:"b-Y" }}</td>
 				<td>{{ spending.value }}</td>
 				<td>{{ spending.descr }}</td>
 				<td>{{ spending.type }}</td>
+				<td>{{ spending.payment }}</td>
 			</tr>
 		{% endfor %}
 	</tbody>
 </table>
 {% endblock %}
-

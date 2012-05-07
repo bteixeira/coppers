@@ -366,24 +366,17 @@ def exportCSV(request):
 
 @login_required
 def report_cash(request):
-	if not request.GET.get('payment', False):
-		payments = ['Dinheiro']
-	else:
-		payments = request.GET['payment'].split(',')
-
-	if not request.GET.get('month', False):
-		month = int(datetime.now().month)
-	else:
-		month = int(request.GET['month'])
-
-	if not request.GET.get('year', False):
-		year = int(datetime.now().year)
-	else:
-		year = int(request.GET['year'])
-
 	user_spendings = request.user.spending_set
-	spendings_raw = user_spendings.filter(date__month=month, date__year=year, payment__name__in=payments).order_by(
-		'date')
+	start = datetime.now() - timedelta(days=1)
+	if request.POST.get('date_start'):
+		start = datetime.strptime(request.POST.get('date_start'), '%Y-%m-%d')
+	user_spendings = user_spendings.filter(date__gte=start)
+	end = datetime.now() - timedelta(days=1)
+	if request.POST.get('date_end'):
+		end = datetime.strptime(request.POST.get('date_end'), '%Y-%m-%d')
+	user_spendings = user_spendings.filter(date__lte=end)
+	payments = PaymentType.objects.all()
+	spendings_raw = user_spendings.order_by('date')
 	spendings = []
 	total = 0
 	for spending in spendings_raw:
@@ -396,19 +389,25 @@ def report_cash(request):
 			type = ''
 		else:
 			type = spending.type.description
+		if spending.payment is None:
+			payment = ''
+		else:
+			payment = spending.payment.name
 		spendings.append({
 			'total': total,
-			'date': str(spending.date),
+			'date': spending.date,
 			'value': spending.value,
 			'descr': descr,
-			'type': type
+			'type': type,
+			'payment': payment
 		})
-	return render_to_response('gastosapp/report_cash.htm', {
+	params = {
 		'spendings': spendings,
-		'month': month,
-		'year': year,
-		'payments': ', '.join(payments)
-	}, context_instance=RequestContext(request))
+		'payments': payments
+	}
+	params['start'] = start
+	params['end'] = end
+	return render_to_response('gastosapp/report_cash.htm', params, context_instance=RequestContext(request))
 
 
 @login_required
