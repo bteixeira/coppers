@@ -8,16 +8,15 @@
 	});
 </script>
 
-<h3>{{ year }}/{{ month }}</h3>
 <div>
 <form class="form-inline" method="post" action="{% url gastosapp.views.report_cash %}">
 	{% csrf_token %}
 	<label for="input-date-start">From</label><input id="input-date-start" name="date_start" placeholder="2000-01-01"{% if start %} value="{{ start|date:"Y-m-d" }}"{% endif %}>
 	<label for="input-date-end">To</label><input id="input-date-end" name="date_end" placeholder="2050-01-01"{% if end %} value="{{ end|date:"Y-m-d" }}"{% endif %}>
 	{% for payment in payments %}
-	<label for="payment_{{ payment.id }}">{{ payment.name }}</label><input type="checkbox" name="payment_{{ payment.id }}" id="payment_{{ payment.id }}">
+	<label for="payment_{{ payment.id }}">{{ payment.name }}</label><input type="checkbox" name="payment_{{ payment.id }}" id="payment_{{ payment.id }}"{% if payment.checked %} checked="checked"{% endif %}>
 	{% endfor %}
-	<input type="submit" value="Go">
+	<button type="submit" class="btn btn-primary">Go</button>
 </form>
 </div>
 <table class="table table-condensed table-bordered table-striped">
@@ -33,11 +32,11 @@
 	</thead>
 	<tbody>
 		{% for spending in spendings %}
-			{% ifchanged spending.date %}</tbody></table><hr><table class="table table-condensed table-bordered table-striped"><tbody>{% endifchanged %}
+			{% ifchanged spending.date %}<tr><td colspan="6"></td></tr><tr><td colspan="6"></td></tr>{% endifchanged %}
 			<tr>
-				<td>{{ spending.total }}</td>
+				<td>&euro; {{ spending.total }}</td>
 				<td><strong>{{ spending.date|date:"j" }}</strong>-{{ spending.date|date:"b-Y" }}</td>
-				<td>{{ spending.value }}</td>
+				<td>&euro; {{ spending.value }}</td>
 				<td>{{ spending.descr }}</td>
 				<td>{{ spending.type }}</td>
 				<td>{{ spending.payment }}</td>

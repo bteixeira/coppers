@@ -376,6 +376,20 @@ def report_cash(request):
 		end = datetime.strptime(request.POST.get('date_end'), '%Y-%m-%d')
 	user_spendings = user_spendings.filter(date__lte=end)
 	payments = PaymentType.objects.all()
+	payment_filter = []
+	payment_inputs = []
+	for payment in payments:
+		pid = request.POST.get('payment_' + str(payment.id))
+		if pid:
+			payment_filter.append(payment.id)
+		p_input = {}
+		p_input['id'] = payment.id
+		p_input['name'] = payment.name
+		p_input['checked'] = pid
+		payment_inputs.append(p_input)
+	print('payment filters: ' + str(payment_filter))
+	if payment_filter:
+		user_spendings = user_spendings.filter(payment__in=payment_filter)
 	spendings_raw = user_spendings.order_by('date')
 	spendings = []
 	total = 0
@@ -403,7 +417,7 @@ def report_cash(request):
 		})
 	params = {
 		'spendings': spendings,
-		'payments': payments
+		'payments': payment_inputs
 	}
 	params['start'] = start
 	params['end'] = end
