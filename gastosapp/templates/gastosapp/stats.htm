@@ -15,7 +15,7 @@
 			{% for line in totals %}
 				<tr>
 					<td>{{ line.0 }}</td>
-					<td>{{ line.1 }}</td>
+					<td><a href="{% url gastosapp.views.month_pie %}?year={{ line.0 }}&month={{ line.1 }}">{{ line.1 }}</a></td>
 					{% for spending in line.2 %}
 					<td>{{ spending }}</td>
 					{% endfor %}
@@ -26,4 +26,3 @@
 {#</body>#}
 {#</html>#}
 {% endblock %}
-

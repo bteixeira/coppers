@@ -1,391 +1,244 @@
 {% extends "gastosapp/base_nav.htm" %}
 {% block main_content %}
+	<script type="text/javascript" src="media/js/month_view.js"></script>
 	<script type="text/javascript">
 
-		var spendings = 0;
-		var day_colors = {
-			{% for day, color in day_colors.items %}
-				'{{ day }}': '{{ color }}'{% if not forloop.last %},{% endif %}
-			{% endfor %}
-		};
+	var spendings = 0;
+	var day_colors = {
+		{% for day, color in day_colors.items %}
+			'{{ day }}':'{{ color }}'{% if not forloop.last %},{% endif %}
+		{% endfor %}
+	};
 
-		function getDayStyle(day) {
-			var style;
-	        var color;
-            var date = new Date().clearTime();
-
-            date.set({ year: {{ year }}, month: ({{ month }} - 1), day: day});
-            color = day_colors[day];
-	        if (!color) {
-				if (date.getDay() === 0) {
-					color = 'DDDDFF';
-				} else if (date.getDay() === 6) {
-					color = 'EEEEFF';
-				}
-	        } else {
-				if (date.getDay() === 0) {
-			        color = 'BBBBFF';
-		        } else if (date.getDay() === 6) {
-			        color = 'CCCCFF';
-		        }
-	        }
-	        if (color) {
-		        style = ' style="background-color: #' + color + ';"';
-	        } else {
-		        style = ''
-	        }
-			return style;
+	function fillTable() {
+		var days = Date.getDaysInMonth({{ year }}, {{ month }} -1);
+		var tbody = $("#table1").children('tbody');
+		for (var day = 1; day <= days; day++) {
+			$('#form-spendings').append(getDayHeader(day));
+			$('#form-spendings').append(getEmptyDaySpending(day));
 		}
 
-		function getCellSpending (day) {
-			if (day !== 0 && !day) {
-				throw "No day passed";
-			}
-			var text =
-					'<div class="row span12 spending" id="' + spendings + '">\
-						<input type="text" placeholder="Description..." class="span5 input_descr" name="descr_' + spendings + '" id="descr_' + spendings + '">\
-						<input type="text" placeholder="&euro; 0,00" style="text-align: right;" class="span1 input_amount" name="amount_' + spendings + '" id="amount_' + spendings + '">\
-						<input type="text" placeholder="Category:Subcategory:Subsub..." class="span2 input_category" name="type_' + spendings + '">\
-						<select class="span2 input_payment" name="payment_' + spendings + '">\
-							<option value="">Payment...</option>\{% for p in payment_types %}
-							<option value="{{ p.id }}">{{ p.name }}</option>\{% endfor %}
-						</select>\
-						<input type="hidden" name="spid_' + spendings + '" id="spid_' + spendings + '" class="spid"/>\
-						<input type="hidden" name="day_' + spendings + '" id="day_' + spendings + '" class="day" value="' + day + '"/>\
-					</div>'
-				;
-
-            spendings ++;
-            return text;
-        }
-
-		function getRowDay(day) {
-
-			var text = '\
-				<tr id="row_day_' + day + '">\
-					<td id="cell_day_"' + day + '" class="day" style="text-align: center; vertical-align: middle;">\
-						<strong>' + day + '</strong>\
-						<br>\
-						Total &euro; XXX\
-					</td>\
-					<td style="text-align: center; vertical-align: bottom;" class="plus_sign">\
-						<button class="btn btn-small" type="button" onclick="addSpendingToDay(' + day + ')"><i class="icon-plus"></i></button>\
-					</td>\
-					<td id="spendings_day_' + day + '" class="spendings_cell">\
-					' + getCellSpending(day) + '\
-					</td>\
-				</tr>';
-
-			return text;
-		}
-
-		function getLeftCell(obj) {
-			var parentTd = $(obj).parent().parent();
-			var prevTd = parentTd.prev();
-			if (prevTd.attr('class') == 'spending') {
-				return prevTd;
-			} else {
-				return null;
-			}
-		}
-		function getRightCell(obj) {
-			var parentTd = $(obj).parent().parent();
-			var nextTd = parentTd.next();
-			if (!nextTd.length) {
-				if (
-						parentTd.find('input.descr').attr('value') == '' &&
-						parentTd.find('input.amount').attr('value') == '' &&
-						parentTd.find('input.type').attr('value') == ''
-				) {
-					return null;
-				}
-				addColumn();
-				nextTd = $(obj).parent().parent().next();
-			}
-			return nextTd;
-		}
-		function getUpperCell(obj) {
-			var parentTd = $(obj).parent().parent();
-			var index = parentTd.index();
-			var prevTr = parentTd.parent().prev();
-			if (!prevTr.length) {
-				return null;
-			} else {
-				var prevTd = prevTr.children().eq(index);
-				return prevTd;
-			}
-		}
-		function getLowerCell(obj) {
-			var parentTd = $(obj).parent().parent();
-			var index = parentTd.index();
-			var nextTr = parentTd.parent().next();
-			if (!nextTr.length) {
-				return null;
-			} else {
-				var nextTd = nextTr.children().eq(index);
-				return nextTd;
-			}
-		}
-		function getThisCell(obj) {
-			var parentTd = $(obj).parent().parent();
-			return parentTd;
-		}
-		function goToLeft(obj, input) {
-			var prevTd = getLeftCell(obj);
-			if (prevTd) {
-				prevTd.find('input.' + input).focus();
-				prevTd.find('input.' + input).select();
-			} else {
-				//alert ('No spending to left.');
-			}
-		}
-		function goToRight(obj, input) {
-			var nextTd = getRightCell(obj);
-			if (!nextTd) {
-				//alert ('This spending is empty.');
-			} else {
-				nextTd.find('input.' + input).focus();
-			}
-		}
-		function goUp(obj, input) {
-			var upperTd = getUpperCell(obj);
-			if (!upperTd) {
-				//alert ('No spending above.');
-			} else {
-				upperTd.find('input.' + input).focus();
-			}
-		}
-		function goDown(obj, input) {
-			var lowerTd = getLowerCell(obj);
-			if (!lowerTd) {
-				//alert ('No spending below.');
-			} else {
-				lowerTd.find('input.' + input).focus();
-			}
-		}
-		function goToSame(obj, input) {
-			var parentTd = getThisCell(obj);
-			parentTd.find('input.' + input).focus();
-		}
-
-		function eventDescrLeft(obj) {
-			goToLeft(obj, 'descr');
-		}
-		function eventDescrRight(obj) {
-			goToRight(obj, 'descr');
-		}
-		function eventDescrUp(obj) {
-			goUp(obj, 'type');
-		}
-		function eventDescrDown(obj) {
-			goToSame(obj, 'amount');
-		}
-		function eventAmountLeft(obj) {
-			goToLeft(obj, 'amount');
-		}
-		function eventAmountRight(obj) {
-			goToRight(obj, 'amount');
-		}
-		function eventAmountUp(obj) {
-			goToSame(obj, 'descr');
-		}
-		function eventAmountDown(obj) {
-			goToSame(obj, 'type');
-		}
-		function eventTypeLeft(obj) {
-			goToLeft(obj, 'type');
-		}
-		function eventTypeRight(obj) {
-			goToRight(obj, 'type');
-		}
-		function eventTypeUp(obj) {
-			goToSame(obj, 'amount');
-		}
-		function eventTypeDown(obj) {
-			goDown(obj, 'descr');
-		}
-
-		function recalc(day) {
-			var total = 0;
-			var tr = $('tr#row_day_' + day);
-			var spends = tr.find('input.amount');
-			spends.each(function() {
-				total += isNaN(parseFloat(this.value)) ? 0 : parseFloat(this.value);
-			});
-			tr.find('td.total').text(total);
-		}
-
-		function putSpending(day, descr, amount, type, spid, payment) {
-			var td = $('td#spendings_day_' + day);
-			var cells = td.children('.spending');
-			var freeCell = cells.filter(function(index) {
-				var inputs = $(this).find('input');
-				var isEmpty = (
-					inputs.filter('.input_descr').val() === '' &&
-					inputs.filter('.input_amount').val() === '' &&
-					inputs.filter('.input_category').val() === ''
-				) ;
-				return isEmpty;
-			}).first();
-			if (!freeCell.length) {
-				//addColumn();
-				addCell(day);
-				//freeCell = $('tr#row_day_' + day).children('.spending').last();
-				freeCell = $('td#spendings_day_' + day).children('.spending').last();
-			}
-			freeCell.find('input.input_descr').val(descr);
-			freeCell.find('input.input_amount').val(amount);
-			freeCell.find('input.input_category').val(type);
-			if (spid === 0 || spid) {
-				freeCell.find('input.spid').val(spid);
-			}
-			freeCell.find('input.day').val(day);
-			freeCell.find('select.input_payment').val(payment);
-		}
-		function getId(idString) {
-			var index = idString.lastIndexOf('_');
-			var id = idString.substring(index + 1);
-			return id;
-		}
-		function initHandlers () {
-			$('.input_descr').autocomplete({
-				                               source:'{% url gastosapp.views.get_descriptions %}',
-				                               autoFocus:true,
-				                               delay:0
-			                               });
-			$('.input_category').autocomplete({
-				                               source:'{% url gastosapp.views.get_types %}',
-				                               autoFocus:true,
-				                               delay:0
-			                               });
-//			$('input.descr').each(function() {$(this).keydown(function(e) {
-//				if (e.which == 37) {
-//					eventDescrLeft(this);
-//				} else if (e.which == 39) {
-//					eventDescrRight(this);
-//				} else if (e.which == 38) {
-//					eventDescrUp(this);
-//				} else if (e.which == 40) {
-//					eventDescrDown(this);
-//				}
-//			})});
-//			$('input.amount').each(function() {$(this).keydown(function(e) {
-//				if (e.which == 37) {
-//					eventAmountLeft(this);
-//				} else if (e.which == 39) {
-//					eventAmountRight(this);
-//				} else if (e.which == 38) {
-//					eventAmountUp(this);
-//				} else if (e.which == 40) {
-//					eventAmountDown(this);
-//				}
-//			})});
-//			$('input.type').each(function() {$(this).keydown(function(e) {
-//				if (e.which == 37) {
-//					eventTypeLeft(this);
-//				} else if (e.which == 39) {
-//					eventTypeRight(this);
-//				} else if (e.which == 38) {
-//					eventTypeUp(this);
-//				} else if (e.which == 40) {
-//					eventTypeDown(this);
-//				}
-//			})});
-//
-//			// recalculate totals for each day
-//			$('input.amount').each(function() {$(this).change(function(e) {
-//				var day = $(this).parent().parent().children('input.day').attr('value');
-//				recalc(day);
-//			})});
-		}
-		function addColumn () {
-			$('#table1').find('tr').each(function(index) {
-				$(this).append(
-					getCellSpending(
-						parseInt($(this).attr('id').substring(8), 10)
-					)
-				);
-			});
-			initHandlers();
-		}
-		function addCell (day) {
-			$('#table1').find('#spendings_day_' + day).each(function(index) {
-				$(this).append(getCellSpending(day));
-			});
-			initHandlers();
-		}
-
-		function addSpendingToDay(day) {
-			$('#spendings_day_' + day).append(getCellSpending(day));
-			initHandlers();
-		}
-		function fillTable() {
-			var days = Date.getDaysInMonth({{ year }}, {{ month }} - 1);
-			var tbody = $("#table1").children('tbody');
-			for (i = 1 ; i <= days ; i++) {
-				tbody.append(getRowDay(i));
-			}
-			initHandlers();
-
-			{% if spendings %}
-			{% for sp in spendings %}
+	{% if spendings %}
+		{% for sp in spendings %}
 			putSpending({{sp.date.day}}, '{{sp.description.description}}', '{{sp.value}}', '{{sp.type.description}}', '{{sp.id}}', '{{ sp.payment.id }}');
-			{% endfor %}
-			{% endif %}
-			for (i = 1 ; i <= days ; i++) {
-				recalc(i);
+		{% endfor %}
+	{% endif %}
+		for (day = 1; day <= days; day++) {
+			updateDayTotal(day);
+		}
+
+		var now = new Date();
+
+		if (now.getFullYear() === {{ year }} && now.getMonth() + 1 === {{ month }}) {
+			var currentDay = now.getDate();
+
+			var currentSpending = $('.spending_day_' + currentDay).last();
+
+			window.scrollTo(0, currentSpending.offset().top - 100); // doesnt always work
+			currentSpending.focus(); // doesnt work
+		}
+	}
+
+	function getEmptyDaySpending(day) {
+		var number = spendings;
+		spendings++;
+
+		var text = '\
+			<div class="row spending_day_' + day + '" style="margin-bottom: 9px;">\
+				<div class="span12">\
+					<button id="btn_remove_' + number + '" class="btn disabled" type="button"><i class="icon-remove"></i></button>\
+					<input id="input_day_' + number + '" type="hidden" name="day_' + number + '" value="' + day + '">\
+					<input id="input_spid_' + number + '" type="hidden" name="spid_' + number + '" value="">\
+					<input id="input_descr_' + number + '" class="input_descr" type="text" placeholder="Description..." style="width: 50%;" name="descr_' + number + '"">\
+					<div class="input-prepend"><span class="add-on">&euro;</span><input id="input_amount_' + number + '" class="input_amount" type="text" placeholder="0.00" style="width: 50px; text-align: right;" name="amount_' + number + '"></div>\
+					<input id="input_type_' + number + '" class="input_category" type="text" placeholder="Category:Subcategory" style="width: 23%;" name="type_' + number + '"">\
+					<select id="input_payment_' + number + '" style="width: 13%;" name="payment_' + number + '">\
+						<option value="">Payment...</option>\
+				{% for type in payment_types %}<option value="{{ type.id }}">{{ type.name }}</option>{% endfor %}\
+					</select>\
+				</div>\
+			</div>\
+			';
+
+		var node = $(text);
+		node.find('.btn').click(function () {
+			remove(number);
+		});
+		node.find('.input_descr').autocomplete({
+			                                       source:'{% url gastosapp.views.get_descriptions %}',
+			                                       autoFocus:true,
+			                                       delay:0,
+			                                       select:function () {
+				                                       solidifySpending(number);
+			                                       },
+			                                       change:function () {
+				                                       solidifySpending(number);
+			                                       }
+		                                       });
+		node.find('.input_descr').keydown(function (e) {
+			if (e.which === 38) {
+				upDescr(this);
+			} else if (e.which === 40) {
+				downDescr(this);
 			}
-		}
+		});
+		node.find('.input_amount').change(function () {
+			checkAndUpdateTotal(number);
+			solidifySpending(number);
+		});
+		node.find('.input_amount').keydown(function (e) {
+			if (e.which === 38) {
+				upAmount(this);
+			} else if (e.which === 40) {
+				downAmount(this);
+			}
+		});
+		node.find('.input_category').autocomplete({
+			                                          source:'{% url gastosapp.views.get_types %}',
+			                                          autoFocus:true,
+			                                          delay:0,
+			                                          select:function () {
+				                                          solidifySpending(number);
+			                                          },
+			                                          change:function () {
+				                                          solidifySpending(number);
+			                                          }
+		                                          });
+		node.find('.input_category').keydown(function (e) {
+			if (e.which === 38) {
+				upType(this);
+			} else if (e.which === 40) {
+				downType(this);
+			}
+		});
+		$('#input_payment_' + number).change(function () {
+			solidifySpending(number);
+		});
 
-		function setFormDate() {
-			var date = $('#select_date').val();
-			var month = date.substring(0, date.indexOf('/'));
-			var year = date.substring(date.indexOf('/') + 1);
-			$('#input_month').val(month);
-			$('#input_year').val(year);
-		}
 
-		$(document).ready(fillTable);
+		return node;
+	}
+	function getFilledDaySpending(day, spid, descr, value, type, payment) {
+		var number = spendings;
+		spendings++;
 
-		$('.input_descr').autocomplete({
-           source: '{% url gastosapp.views.get_descriptions %}',
-           autoFocus: true,
-           delay: 0
-       });
+		var text = '\
+			<div class="row spending_day_' + day + '" style="margin-bottom: 9px;">\
+				<div class="span12">\
+					<button id="btn_remove_' + number + '" class="btn" type="button" onclick="remove(' + number + ')"><i class="icon-remove"></i></button>\
+					<input id="input_day_' + number + '" type="hidden" name="day_' + number + '" value="' + day + '">\
+					<input id="input_spid_' + number + '" type="hidden" name="spid_' + number + '" value="' + spid + '">\
+					<input id="input_descr_' + number + '" class="input_descr" type="text" placeholder="Description..." style="width: 50%;" name="descr_' + number + '" value="' + descr + '">\
+					<div class="input-prepend"><span class="add-on">&euro;</span><input id="input_amount_' + number + '" class="input_amount" type="text" placeholder="&euro; 0.00" style="width: 50px; text-align: right;" name="amount_' + number + '" value="' + value + '"></div>\
+					<input id="input_type_' + number + '" class="input_category" type="text" placeholder="Category:Subcategory" style="width: 23%;" name="type_' + number + '" value="' + type + '">\
+					<select id="input_payment_' + number + '" style="width: 13%;" name="payment_' + number + '">\
+						<option value="">Payment...</option>\
+				{% for type in payment_types %}<option value="{{ type.id }}"' + (payment === '{{ type.id }}' ? ' selected="selected"' : '') + '>{{ type.name }}</option>{% endfor %}\
+					</select>\
+				</div>\
+			</div>\
+			';
+
+		var node = $(text);
+		node.find('.btn').click(function () {
+			remove(number);
+		});
+		node.find('.input_descr').autocomplete({
+			                                       source:'{% url gastosapp.views.get_descriptions %}',
+			                                       autoFocus:true,
+			                                       delay:0
+		                                       });
+		node.find('.input_descr').keydown(function (e) {
+			if (e.which === 38) {
+				upDescr(this);
+			} else if (e.which === 40) {
+				downDescr(this);
+			}
+		});
+		node.find('.input_amount').change(function () {
+			checkAndUpdateTotal(number);
+		});
+		node.find('.input_amount').keydown(function (e) {
+			if (e.which === 38) {
+				upAmount(this);
+			} else if (e.which === 40) {
+				downAmount(this);
+			}
+		});
+		node.find('.input_category').autocomplete({
+			                                          source:'{% url gastosapp.views.get_types %}',
+			                                          autoFocus:true,
+			                                          delay:0
+		                                          });
+		node.find('.input_category').keydown(function (e) {
+			if (e.which === 38) {
+				upType(this);
+			} else if (e.which === 40) {
+				downType(this);
+			}
+		});
+
+		return node;
+	}
+
+	$(document).ready(fillTable);
 
 	</script>
-	<div>
-		<strong>Month:</strong>
-		<a href="month_view?month={{ month_prev }}&year={{ month_prev_year }}">&laquo;</a>
-		{{ month }}&nbsp;/&nbsp;{{ year }}
-		<a href="month_view?month={{ month_next }}&year={{ month_next_year }}">&raquo;</a>
+
+	<div class="container">
+		<div class="row">
+			<div class="span12">
+				<form method="GET" action="month_view" id="form_date">
+					<label for="select_date">Go to:</label>
+					<select name="date" id="select_date">
+						{% for date in dates %}
+							<option value="{{ date.month }}/{{ date.year }}"
+									{% if date.month == month and date.year == year %}
+									selected="selected"{% endif %}>{{ date.month }} / {{ date.year }}</option>
+						{% endfor %}
+					</select>
+					<input type="hidden" name="month" id="input_month"/>
+					<input type="hidden" name="year" id="input_year"/>
+					<input type="submit" value="Go" onclick="javascript:setFormDate()"/>
+				</form>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="span12">
+				<strong>Month:</strong>
+				<a href="month_view?month={{ month_prev }}&year={{ month_prev_year }}">&laquo;</a>
+				{{ month }}&nbsp;/&nbsp;{{ year }}
+				<a href="month_view?month={{ month_next }}&year={{ month_next_year }}">&raquo;</a>
+			</div>
+		</div>
+
+		<form id="form-spendings" action="save" method="post" class="form-inline">
+			<div class="navbar navbar-fixed-bottom">
+				<div class="navbar-inner">
+					<div class="container" style="width: auto;">
+						<button type="submit" class="btn btn-primary">Save</button>
+					</div>
+				</div>
+
+			</div>
+
+			{% csrf_token %}
+			<input type="hidden" name="code" value="{{ code.code }}">
+			<input type="hidden" name="year" value="{{ year }}">
+			<input type="hidden" name="month" value="{{ month }}">
+		</form>
+
+		<div class="row">
+			<div class="span12">&nbsp;</div>
+		</div>
+		<div class="row">
+			<div class="span12">&nbsp;</div>
+		</div>
+		<div class="row">
+			<div class="span12">&nbsp;</div>
+		</div>
+		<a name="here">fsdfdsf</a>
 	</div>
-	<form method="GET" action="month_view" id="form_date">
-		<select name="date" id="select_date">
-			{% for date in dates %}
-				<option value="{{ date.month }}/{{ date.year }}" {% if date.month == month and date.year == year %} selected="selected"{% endif %}>{{ date.month }} / {{ date.year }}</option>
-			{% endfor %}
-		</select>
-		<input type="hidden" name="month" id="input_month"/>
-		<input type="hidden" name="year" id="input_year"/>
-		<input type="submit" value="Go" onclick="javascript:setFormDate()"/>
-	</form>
 
-	<form id="form1" action="save" method="post">
-		{% csrf_token %}
-		<input type="hidden" name="code" value="{{ code.code }}">
-		<input type="hidden" name="year" value="{{ year }}">
-		<input type="hidden" name="month" value="{{ month }}">
-		<div class="control-group">
-			<button type="submit" class="btn btn-primary">Save</button>
-		</div>
-		<table id="table1" class="table table-condensed table-bordered table-striped">
-			<tbody>
-
-			</tbody>
-		</table>
-		<div class="control-group">
-			<button type="submit" class="btn btn-primary">Save</button>
-		</div>
-	</form>
 {% endblock %}

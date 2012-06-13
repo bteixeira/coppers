@@ -13,6 +13,7 @@ from datetime import *
 import StringIO
 from gastosapp.unicoder import *
 import version
+import calendar
 
 @login_required
 def index(request):
@@ -42,26 +43,21 @@ def about(request):
 
 @login_required
 def month_view(request):
-	code = 'bteixeira'
 	if Spending.objects.exists():
 		dateStart = Spending.objects.order_by('date')[0].date
 		dateEnd = Spending.objects.order_by('-date')[0].date
 	else:
 		dateStart = datetime.now()
 		dateEnd = dateStart
-	print 'start date: ' + str(dateStart)
-	print 'end date: ' + str(dateEnd)
 	dates = []
 	m = dateStart.month
 	y = dateStart.year
-	print '!!! ' + str(m) + '/' + str(y)
 	dates.append({'month': m, 'year': y})
 	while m != dateEnd.month or y != dateEnd.year:
 		m = (m % 12) + 1
 		if m == 1:
 			y += 1
 		dates.append({'month': m, 'year': y})
-		print '!!! ' + str(m) + '/' + str(y)
 	if not request.GET.get('month', False):
 		month = int(datetime.now().month)
 	else:
@@ -70,7 +66,6 @@ def month_view(request):
 		year = int(datetime.now().year)
 	else:
 		year = int(request.GET['year'])
-	print 'month: ' + str(month)
 	if month == 12:
 		month_next = 1
 		month_next_year = year + 1
@@ -87,11 +82,21 @@ def month_view(request):
 		month_prev_year = month_next_year = year
 	year_next = year + 1
 	year_prev = year - 1
-	print 'code: ' + str(code)
-	spendings = request.user.spending_set.filter(date__month=month, date__year=year)
+	spendings_x = request.user.spending_set.filter(date__month=month, date__year=year).order_by('date')
+	days = {}
+	days_of_month = calendar.monthrange(year, month)[1]
+	for day in range(1, days_of_month + 1):
+		spendings = request.user.spending_set.filter(date__day=day, date__month=month, date__year=year)
+		total = 0
+		obj = {}
+		for spending in spendings:
+			total = total + spending.value
+		obj['total'] = total
+		obj['spendings'] = spendings
+		days[day] = obj
+
 	day_colors = get_day_colors(month, year)
 	payment_types = PaymentType.objects.order_by('name')
-	print spendings
 	return render_to_response('gastosapp/month_view.htm',
 			{'month': month, 'year': year,
 			 'month_prev': month_prev,
@@ -100,7 +105,8 @@ def month_view(request):
 			 'month_next_year': month_next_year,
 			 'year_prev': year_prev,
 			 'year_next': year_next,
-			 'spendings': spendings,
+			 'spendings': spendings_x,
+			 'days': days,
 			 'day_colors': day_colors,
 			 'payment_types': payment_types,
 			 'dates': dates}, context_instance=RequestContext(request))
@@ -453,4 +459,32 @@ def get_types(request):
 		descriptions = descriptions[:limit]
 	return render_to_response('gastosapp/array.json.htm', {
 		'descriptions': descriptions
+	}, context_instance=RequestContext(request))
+
+@login_required
+def month_pie(request):
+	month = request.GET.get('month')
+	if month is None:
+		month = request.POST.get('month')
+	if month is None:
+		month = 2
+	year = request.GET.get('year')
+	if year is None:
+		year = request.POST.get('year')
+	if year is None:
+		year = 2012
+	spendings = request.user.spending_set.filter(date__month=month, date__year=year)
+	data = {}
+	for spending in spendings:
+		type = spending.type.description
+		if type in data:
+			total = data[type]
+			total += spending.value
+			data[type] = total
+		else:
+			data[type] = spending.value
+
+	return render_to_response('gastosapp/month_pie.htm', {
+		#'data': {'Coisas': 100, 'Cenas': 14.3}
+		'data': data
 	}, context_instance=RequestContext(request))

@@ -1,0 +1,54 @@
+{% extends "gastosapp/base_nav.htm" %}
+{% block main_title %}Experimental Pie Chart{% endblock %}
+{% block main_content %}
+	<script type="text/javascript">
+		$(document).ready(function () {
+			var data = [
+//				['Heavy Industry', 14.83],
+//				['Retail', 11],
+//				['Light Industry', 12],
+//				['Out of home', 13],
+//				['Out of home', 14],
+//				['Out of home', 15],
+//				['Out of home', 16],
+//				['Out of home', 17],
+//				['Out of home', 18],
+//				['Commuting', 19],
+//				['Orientation', 20]
+				{% for key, value in data.items %}
+					['{{ key }}', {{ value }}]{% if not loop.last %},{% endif %}
+				{% endfor %}
+			];
+			var plot1 = jQuery.jqplot('chart-container', [data],
+			                          {
+				                          seriesColors:[
+					                          "#FF3333",
+					                          "#33FF33",
+					                          "#3333FF",
+					                          "#FF33FF",
+					                          "#FFFF33",
+					                          "#33FFFF",
+					                          "#66FF66",
+					                          "#6666FF",
+					                          "#FF66FF",
+					                          "#FFFF66",
+					                          "#66FFFF"
+				                          ],
+				                          seriesDefaults:{
+					                          // Make this a pie chart.
+					                          renderer:jQuery.jqplot.PieRenderer,
+					                          rendererOptions:{
+						                          // Put data labels on the pie slices.
+						                          // By default, labels show the percentage of the slice.
+						                          showDataLabels:true,
+						                          dataLabels:'value',
+						                          dataLabelFormatString:'&euro; %.2f'
+					                          }
+				                          },
+				                          legend:{ show:true, location:'e' }
+			                          }
+			);
+		});
+	</script>
+	<div id="chart-container" style="height: 500px;"></div>
+{% endblock %}
