@@ -145,35 +145,6 @@ function setFormDate() {
 	$('#input_year').val(year);
 }
 
-function solidifySpending(spending) {
-	$('#btn_remove_' + spending).removeClass('disabled');
-
-	$('#input_descr_' + spending).autocomplete('destroy');
-	$('#input_descr_' + spending).autocomplete({
-		                                           source:'{% url gastosapp.views.get_descriptions %}',
-		                                           autoFocus:true,
-		                                           delay:0
-	                                           });
-
-	$('#input_amount_' + spending).unbind('change');
-	$('#input_amount_' + spending).change(function () {
-		checkAndUpdateTotal(spending);
-	});
-
-	$('#input_type_' + spending).autocomplete('destroy');
-	$('#input_type_' + spending).autocomplete({
-		                                          source:'{% url gastosapp.views.get_types %}',
-		                                          autoFocus:true,
-		                                          delay:0
-	                                          });
-
-	$('#input_payment_' + spending).unbind('change');
-
-	var day = $('#input_day_' + spending).val();
-	var text = getEmptyDaySpending(day);
-	$('.spending_day_' + day).last().after(text);
-}
-
 function checkAndUpdateTotal(spending) {
 	var input = $('#input_amount_' + spending);
 	var val = parseFloat(input.val());
