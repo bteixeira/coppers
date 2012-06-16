@@ -474,15 +474,20 @@ def month_pie(request):
 	if year is None:
 		year = 2012
 	spendings = request.user.spending_set.filter(date__month=month, date__year=year)
-	data = {}
+	data = {'[SEM TIPO]': 0}
 	for spending in spendings:
-		type = spending.type.description
-		if type in data:
-			total = data[type]
+		if spending.type is None:
+			total = data['[SEM TIPO]']
 			total += spending.value
-			data[type] = total
+			data['[SEM TIPO]'] = total
 		else:
-			data[type] = spending.value
+			type = spending.type.description
+			if type in data:
+				total = data[type]
+				total += spending.value
+				data[type] = total
+			else:
+				data[type] = spending.value
 
 	return render_to_response('gastosapp/month_pie.htm', {
 		'data': data
