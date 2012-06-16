@@ -16,6 +16,8 @@ urlpatterns = patterns('',
 	(r'^exportCSV$', 'gastosapp.views.exportCSV'),
 	(r'^report_cash$', 'gastosapp.views.report_cash'),
 	(r'^month_pie$', 'gastosapp.views.month_pie'),
+	(r'^personal$', 'gastosapp.views.personal'),
+	(r'^change_password$', 'gastosapp.views.change_password'),
 
     (r'^services/descriptions$', 'gastosapp.views.get_descriptions'),
     (r'^services/types', 'gastosapp.views.get_types'),

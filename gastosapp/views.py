@@ -485,6 +485,21 @@ def month_pie(request):
 			data[type] = spending.value
 
 	return render_to_response('gastosapp/month_pie.htm', {
-		#'data': {'Coisas': 100, 'Cenas': 14.3}
 		'data': data
 	}, context_instance=RequestContext(request))
+
+@login_required
+def personal(request):
+	return render_to_response('gastosapp/personal.htm', {'version': version.VERSION},
+	                          context_instance=RequestContext(request))
+
+@login_required
+def change_password(request):
+	args = {}
+	if request.POST['password'] == request.POST['password-confirm']:
+		request.user.set_password(request.POST['password'])
+		request.user.save()
+		return HttpResponseRedirect(reverse('gastosapp.views.personal'))
+	else:
+		return render_to_response('gastosapp/personal.htm', args,
+	                          context_instance=RequestContext(request))
