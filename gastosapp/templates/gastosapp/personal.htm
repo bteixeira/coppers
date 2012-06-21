@@ -1,6 +1,16 @@
 {% extends "gastosapp/base_nav.htm" %}
 {% block main_title %}Personal settings{% endblock %}
 {%  block main_content %}
+	{% if messages %}
+		{% for message in messages %}
+			{% if message.tags == 'error' %}
+				<div class="alert alert-error">{{ message }}</div>
+			{% endif %}
+			{% if message.tags == 'success' %}
+				<div class="alert alert-success">{{ message }}</div>
+			{% endif %}
+		{% endfor %}
+	{% endif %}
 	<div class="row">
 		<form class="well form-horizontal" action="{% url gastosapp.views.change_password %}" method="POST">
 			{% csrf_token %}

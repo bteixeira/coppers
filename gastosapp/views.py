@@ -14,6 +14,7 @@ import StringIO
 from gastosapp.unicoder import *
 import version
 import calendar
+from django.contrib import messages
 
 @login_required
 def index(request):
@@ -504,7 +505,9 @@ def change_password(request):
 	if request.POST['password'] == request.POST['password-confirm']:
 		request.user.set_password(request.POST['password'])
 		request.user.save()
+		messages.success(request, 'Password changed')
 		return HttpResponseRedirect(reverse('gastosapp.views.personal'))
 	else:
+		messages.error(request, 'Passwords do not match')
 		return render_to_response('gastosapp/personal.htm', args,
 	                          context_instance=RequestContext(request))
