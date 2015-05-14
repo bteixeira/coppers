@@ -1,14 +1,3 @@
 *.pyc
-gastosapp/data
-.hg/
-.project
-.pydevproject
-.settings/
-gastos.db
-gastosapp/testing/
-.git_hub/
+db.sqlite3
 .idea/
-server.log
-settings.py
-gastos.wsgi
-

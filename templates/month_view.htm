@@ -1,0 +1,277 @@
+{% extends "base_nav.htm" %}
+
+{% load staticfiles %}
+
+{% block main_content %}
+	<script type="text/javascript" src="{% static 'js/month_view.js' %}"></script>
+	<script type="text/javascript">
+
+	var spendings = 0;
+	var day_colors = {
+		{% for day, color in day_colors.items %}
+			'{{ day }}':'{{ color }}'{% if not forloop.last %},{% endif %}
+		{% endfor %}
+	};
+
+	function fillTable() {
+		var days = Date.getDaysInMonth({{ year }}, {{ month }} -1);
+		var tbody = $("#table1").children('tbody');
+		for (var day = 1; day <= days; day++) {
+			$('#form-spendings').append(getDayHeader(day));
+			$('#form-spendings').append(getEmptyDaySpending(day));
+		}
+
+	{% if spendings %}
+		{% for sp in spendings %}
+			putSpending({{sp.date.day}}, '{{sp.description.description}}', '{{sp.value}}', '{{sp.type.description}}', '{{sp.id}}', '{{ sp.payment.id }}');
+		{% endfor %}
+	{% endif %}
+		for (day = 1; day <= days; day++) {
+			updateDayTotal(day);
+		}
+
+		var now = new Date();
+
+		if (now.getFullYear() === {{ year }} && now.getMonth() + 1 === {{ month }}) {
+			var currentDay = now.getDate();
+
+			var currentSpending = $('.spending_day_' + currentDay).last();
+
+			window.scrollTo(0, currentSpending.offset().top - 100); // doesnt always work
+			currentSpending.focus(); // doesnt work
+		}
+	}
+
+	function getEmptyDaySpending(day) {
+		var number = spendings;
+		spendings++;
+
+		var text = '\
+			<div class="row spending_day_' + day + '" style="margin-bottom: 9px;">\
+				<div class="span12">\
+					<button id="btn_remove_' + number + '" class="btn disabled" type="button"><i class="icon-remove"></i></button>\
+					<input id="input_day_' + number + '" type="hidden" name="day_' + number + '" value="' + day + '">\
+					<input id="input_spid_' + number + '" type="hidden" name="spid_' + number + '" value="">\
+					<input id="input_descr_' + number + '" class="input_descr" type="text" placeholder="Description..." style="width: 50%;" name="descr_' + number + '"">\
+					<div class="input-prepend"><span class="add-on">&euro;</span><input id="input_amount_' + number + '" class="input_amount" type="text" placeholder="0.00" style="width: 50px; text-align: right;" name="amount_' + number + '"></div>\
+					<input id="input_type_' + number + '" class="input_category" type="text" placeholder="Category:Subcategory" style="width: 23%;" name="type_' + number + '"">\
+					<select id="input_payment_' + number + '" style="width: 13%;" name="payment_' + number + '">\
+						<option value="">Payment...</option>\
+				{% for type in payment_types %}<option value="{{ type.id }}">{{ type.name }}</option>{% endfor %}\
+					</select>\
+				</div>\
+			</div>\
+			';
+
+		var node = $(text);
+		node.find('.btn').click(function () {
+			remove(number);
+		});
+		node.find('.input_descr').autocomplete({
+			                                       source:'{% url 'app.views.get_descriptions' %}',
+			                                       autoFocus:true,
+			                                       delay:0,
+			                                       select:function () {
+				                                       solidifySpending(number);
+			                                       },
+			                                       change:function () {
+				                                       solidifySpending(number);
+			                                       }
+		                                       });
+		node.find('.input_descr').keydown(function (e) {
+			if (e.which === 38) {
+				upDescr(this);
+			} else if (e.which === 40) {
+				downDescr(this);
+			}
+		});
+		node.find('.input_amount').change(function () {
+			checkAndUpdateTotal(number);
+			solidifySpending(number);
+		});
+		node.find('.input_amount').keydown(function (e) {
+			if (e.which === 38) {
+				upAmount(this);
+			} else if (e.which === 40) {
+				downAmount(this);
+			}
+		});
+		node.find('.input_category').autocomplete({
+			                                          source:'{% url 'app.views.get_types' %}',
+			                                          autoFocus:true,
+			                                          delay:0,
+			                                          select:function () {
+				                                          solidifySpending(number);
+			                                          },
+			                                          change:function () {
+				                                          solidifySpending(number);
+			                                          }
+		                                          });
+		node.find('.input_category').keydown(function (e) {
+			if (e.which === 38) {
+				upType(this);
+			} else if (e.which === 40) {
+				downType(this);
+			}
+		});
+		$('#input_payment_' + number).change(function () {
+			solidifySpending(number);
+		});
+
+
+		return node;
+	}
+
+	function solidifySpending(spending) {
+		$('#btn_remove_' + spending).removeClass('disabled');
+
+		$('#input_descr_' + spending).autocomplete('destroy');
+		$('#input_descr_' + spending).autocomplete({
+			                                           source:'{% url 'app.views.get_descriptions' %}',
+			                                           autoFocus:true,
+			                                           delay:0
+		                                           });
+
+		$('#input_amount_' + spending).unbind('change');
+		$('#input_amount_' + spending).change(function () {
+			checkAndUpdateTotal(spending);
+		});
+
+		$('#input_type_' + spending).autocomplete('destroy');
+		$('#input_type_' + spending).autocomplete({
+			                                          source:'{% url 'app.views.get_types' %}',
+			                                          autoFocus:true,
+			                                          delay:0
+		                                          });
+
+		$('#input_payment_' + spending).unbind('change');
+
+		var day = $('#input_day_' + spending).val();
+		var text = getEmptyDaySpending(day);
+		$('.spending_day_' + day).last().after(text);
+	}
+
+	function getFilledDaySpending(day, spid, descr, value, type, payment) {
+		var number = spendings;
+		spendings++;
+
+		var text = '\
+			<div class="row spending_day_' + day + '" style="margin-bottom: 9px;">\
+				<div class="span12">\
+					<button id="btn_remove_' + number + '" class="btn" type="button" onclick="remove(' + number + ')"><i class="icon-remove"></i></button>\
+					<input id="input_day_' + number + '" type="hidden" name="day_' + number + '" value="' + day + '">\
+					<input id="input_spid_' + number + '" type="hidden" name="spid_' + number + '" value="' + spid + '">\
+					<input id="input_descr_' + number + '" class="input_descr" type="text" placeholder="Description..." style="width: 50%;" name="descr_' + number + '" value="' + descr + '">\
+					<div class="input-prepend"><span class="add-on">&euro;</span><input id="input_amount_' + number + '" class="input_amount" type="text" placeholder="&euro; 0.00" style="width: 50px; text-align: right;" name="amount_' + number + '" value="' + value + '"></div>\
+					<input id="input_type_' + number + '" class="input_category" type="text" placeholder="Category:Subcategory" style="width: 23%;" name="type_' + number + '" value="' + type + '">\
+					<select id="input_payment_' + number + '" style="width: 13%;" name="payment_' + number + '">\
+						<option value="">Payment...</option>\
+				{% for type in payment_types %}<option value="{{ type.id }}"' + (payment === '{{ type.id }}' ? ' selected="selected"' : '') + '>{{ type.name }}</option>{% endfor %}\
+					</select>\
+				</div>\
+			</div>\
+			';
+
+		var node = $(text);
+		node.find('.btn').click(function () {
+			remove(number);
+		});
+		node.find('.input_descr').autocomplete({
+			                                       source:'{% url 'app.views.get_descriptions' %}',
+			                                       autoFocus:true,
+			                                       delay:0
+		                                       });
+		node.find('.input_descr').keydown(function (e) {
+			if (e.which === 38) {
+				upDescr(this);
+			} else if (e.which === 40) {
+				downDescr(this);
+			}
+		});
+		node.find('.input_amount').change(function () {
+			checkAndUpdateTotal(number);
+		});
+		node.find('.input_amount').keydown(function (e) {
+			if (e.which === 38) {
+				upAmount(this);
+			} else if (e.which === 40) {
+				downAmount(this);
+			}
+		});
+		node.find('.input_category').autocomplete({
+			                                          source:'{% url 'app.views.get_types' %}',
+			                                          autoFocus:true,
+			                                          delay:0
+		                                          });
+		node.find('.input_category').keydown(function (e) {
+			if (e.which === 38) {
+				upType(this);
+			} else if (e.which === 40) {
+				downType(this);
+			}
+		});
+
+		return node;
+	}
+
+	$(document).ready(fillTable);
+
+	</script>
+
+	<div class="container">
+		<div class="row">
+			<div class="span12">
+				<form method="GET" action="month_view" id="form_date">
+					<label for="select_date">Go to:</label>
+					<select name="date" id="select_date">
+						{% for date in dates %}
+							<option value="{{ date.month }}/{{ date.year }}"
+									{% if date.month == month and date.year == year %}
+									selected="selected"{% endif %}>{{ date.month }} / {{ date.year }}</option>
+						{% endfor %}
+					</select>
+					<input type="hidden" name="month" id="input_month"/>
+					<input type="hidden" name="year" id="input_year"/>
+					<input type="submit" value="Go" onclick="javascript:setFormDate()"/>
+				</form>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="span12">
+				<strong>Month:</strong>
+				<a href="month_view?month={{ month_prev }}&year={{ month_prev_year }}">&laquo;</a>
+				{{ month }}&nbsp;/&nbsp;{{ year }}
+				<a href="month_view?month={{ month_next }}&year={{ month_next_year }}">&raquo;</a>
+			</div>
+		</div>
+
+		<form id="form-spendings" action="save" method="post" class="form-inline">
+			<div class="navbar navbar-fixed-bottom">
+				<div class="navbar-inner">
+					<div class="container" style="width: auto;">
+						<button type="submit" class="btn btn-primary">Save</button>
+					</div>
+				</div>
+
+			</div>
+
+			{% csrf_token %}
+			<input type="hidden" name="code" value="{{ code.code }}">
+			<input type="hidden" name="year" value="{{ year }}">
+			<input type="hidden" name="month" value="{{ month }}">
+		</form>
+
+		<div class="row">
+			<div class="span12">&nbsp;</div>
+		</div>
+		<div class="row">
+			<div class="span12">&nbsp;</div>
+		</div>
+		<div class="row">
+			<div class="span12">&nbsp;</div>
+		</div>
+		<a name="here">fsdfdsf</a>
+	</div>
+
+{% endblock %}
