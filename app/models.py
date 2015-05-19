@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+# Unused?
 class Code(models.Model):
 	code = models.CharField(max_length=32)
 	metainfo = models.TextField()
@@ -8,26 +9,34 @@ class Code(models.Model):
 	def __unicode__(self):
 		return '[[' + self.code + ']]'
 
+# Unused?
 class CodeInfo(models.Model):
 	code = models.ForeignKey(Code)
 	key = models.CharField(max_length=32)
 	value = models.CharField(max_length=256)
 
+# Tags to apply to the spending
 class SpendingType(models.Model):
 	description = models.CharField(max_length=200)
 	
 	def __unicode__(self):
 		return 'TYPE[' + self.description + ']'
 
+# The description of the spending
+# "had lunch with boss on the vietnamese around the corner from the office"
+# Making this an entity makes it easier to reuse descriptions and group spendings by same description
 class SpendingDescription(models.Model):
 	description = models.CharField(max_length=200)
 	
 	def __unicode__(self):
 		return '<' + self.description + '>'
 
+# Unused?
 class SpendingLocation(models.Model):
 	description = models.CharField(max_length=200)
 
+# The "account" from which you paid this
+# Intended for values like "pocket money", "savings account", "visa credit card"
 class PaymentType(models.Model):
 	name = models.CharField(max_length=30)
 
@@ -52,7 +61,8 @@ class Spending(models.Model):
 			result += ' ON ' + self.description.__unicode__()
 		result += '}'
 		return result
-	
+
+# Unused?
 class PeriodType(models.Model):
 	name = models.CharField(max_length=30)
 	color = models.CharField(max_length=6)
@@ -60,6 +70,7 @@ class PeriodType(models.Model):
 	def __unicode__(self):
 		return self.name + ' (#' + self.color + ')'
 
+# Unused?
 class Period(models.Model):
 	name = models.CharField(max_length=30)
 	start = models.DateField()
