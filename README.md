@@ -1,7 +1,46 @@
-Yopa is a simple WebApp I wrote in Django to keep track of my daily and monthly
-expenditures. Far from being a complete accounting application, it simply lets
-you input your spendings, and shows you a collection of stats and graphs based
-on that. For example, it is useful to know not just how much you spend every
-month in total, but how much you spend on gas every month, and whether that
-amount is raising. It is also interesting to see in a pie chart what part of
-your budget you are dedicating to phone calls, or meals, or whatever.
+Coppers
+=======
+
+Something to help you figure out where the hell you're spending all that money.
+
+Made with Django.
+
+Install & Run
+-------------
+
+1. Clone it from Github
+
+	```
+	$ git clone https://github.com/bteixeira/coppers.git
+	$ cd coppers
+	```
+
+2. Install Django and other dependencies. It's probably a good idea to do it in a VirtualEnv:
+
+	```
+	$ virtualenv env
+	$ source env/bin/activate
+	$ pip install -r requirements.txt
+	```
+
+3. Initialize the database. Without any configuration, this will use a local instance of SQLite (using other DBs probably requires installing additional libraries)
+
+	```
+	$ ./manage.py migrate
+	```
+
+4. Create an admin user for Django Admin:
+
+	```
+	$ ./manage.py createsuperuser
+	```
+
+5. Start the development server
+
+	```
+	$ ./manage.py runserver
+	```
+
+6. Go to [http://localhost:8000/](http://localhost:8000/) and log in with the admin account you just created. Have fun!
+
+7. Optionally, go to [http://localhost:8000/admin](http://localhost:8000/admin) and create other users
