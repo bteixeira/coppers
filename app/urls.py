@@ -27,4 +27,6 @@ urlpatterns = [
 
 #	(r'^media/(?P<path>.*\.js)$', 'django.views.static.serve', {'document_root': 'gastosapp/media/js/'}),
 	# url(r'^assets/(?P<path>.*)$', django.views.static.serve, {'document_root': 'assets/'}),
+
+    url(r'^add', views.add_form),
 ]

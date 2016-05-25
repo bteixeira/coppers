@@ -3,7 +3,7 @@ Coppers
 
 Something to help you figure out where the hell you're spending all that money.
 
-Made with Django.
+Made with Django (and love).
 
 Install & Run
 -------------

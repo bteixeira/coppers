@@ -23,6 +23,11 @@ def index(request):
 	return HttpResponseRedirect(reverse('app.views.month_view'))
 
 
+@login_required
+def add_form(request):
+    return render_to_response('add.htm', context_instance=RequestContext(request))
+
+
 def get_day_colors(month, year):
 	periods_start = Period.objects.filter(start__year=year, start__month=month)
 	periods_end = Period.objects.filter(end__year=year, end__month=month)
